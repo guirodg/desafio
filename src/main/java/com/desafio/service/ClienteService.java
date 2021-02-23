@@ -2,10 +2,13 @@ package com.desafio.service;
 
 import com.desafio.dto.ClientePostDto;
 import com.desafio.dto.ClientePutDto;
+import com.desafio.erros.Execao;
 import com.desafio.model.Cliente;
 import com.desafio.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -43,7 +46,7 @@ public class ClienteService {
 
     public Cliente findeByIdOrThrowBadRequest(Long id) {
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new StringIndexOutOfBoundsException("Cliente nao encontrado"));
+                .orElseThrow(() -> new Execao("Cliente nao encontrado"));
     }
 
 }
