@@ -1,7 +1,7 @@
 package com.desafio.controllers;
 
-import com.desafio.dto.ClientePostDto;
-import com.desafio.dto.ClientePutDto;
+import com.desafio.dto.reqcliente.ClientePostDto;
+import com.desafio.dto.reqcliente.ClientePutDto;
 import com.desafio.model.Cliente;
 import com.desafio.service.ClienteService;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +27,14 @@ public class ClienteController {
         return new ResponseEntity<>(clienteService.save(clientePostDto), HttpStatus.CREATED);
     }
 
-    @PutMapping
-    public ResponseEntity replace(@RequestBody ClientePutDto clientePutDto) {
-        return new ResponseEntity<>(clienteService.replace(clientePutDto), HttpStatus.NO_CONTENT);
-    }
-
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        clienteService.delete(id);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
+//    @PutMapping
+//    public ResponseEntity replace(@RequestBody ClientePutDto clientePutDto) {
+//        return new ResponseEntity<>(clienteService.replace(clientePutDto), HttpStatus.NO_CONTENT);
+//    }
+//
+//    @DeleteMapping(path = "/{id}")
+//    public ResponseEntity delete(@PathVariable Float cpf) {
+//        clienteService.delete(cpf);
+//        return new ResponseEntity(HttpStatus.NO_CONTENT);
+//    }
 }

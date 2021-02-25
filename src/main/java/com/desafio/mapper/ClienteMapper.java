@@ -1,7 +1,7 @@
 package com.desafio.mapper;
 
-import com.desafio.dto.ClientePostDto;
-import com.desafio.dto.ClientePutDto;
+import com.desafio.dto.reqcliente.ClientePostDto;
+import com.desafio.dto.reqcliente.ClientePutDto;
 import com.desafio.model.Cliente;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

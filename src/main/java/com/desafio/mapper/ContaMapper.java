@@ -1,0 +1,14 @@
+package com.desafio.mapper;
+
+import com.desafio.dto.reqconta.ContaPostDto;
+import com.desafio.model.Conta;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+
+@Mapper(componentModel = "spring")
+public abstract class ContaMapper {
+    public static final ContaMapper INSTANCE = Mappers.getMapper(ContaMapper.class);
+
+    public abstract Conta toConta(ContaPostDto contaPostDto);
+
+}
