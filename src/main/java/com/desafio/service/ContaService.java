@@ -12,10 +12,9 @@ import org.springframework.stereotype.Service;
 public class ContaService {
     private final ContaRepository contaRepository;
 
-    public Conta save(ContaPostDto contaPostDto){
+    public Conta save(ContaPostDto contaPostDto) {
         Conta conta = ContaMapper.INSTANCE.toConta(contaPostDto);
         return contaRepository.save(conta);
     }
-
 
 }

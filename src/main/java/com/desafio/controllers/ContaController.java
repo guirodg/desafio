@@ -18,7 +18,7 @@ public class ContaController {
     private final ContaService contaService;
 
     @PostMapping
-    public ResponseEntity<Conta> save(@RequestBody ContaPostDto contaPostDto){
+    public ResponseEntity<Conta> save(@RequestBody ContaPostDto contaPostDto) {
         return new ResponseEntity<>(contaService.save(contaPostDto), HttpStatus.CREATED);
     }
 }

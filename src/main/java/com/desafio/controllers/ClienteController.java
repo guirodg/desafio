@@ -2,6 +2,7 @@ package com.desafio.controllers;
 
 import com.desafio.dto.reqcliente.ClientePostDto;
 import com.desafio.dto.reqcliente.ClientePutDto;
+import com.desafio.erros.ExecaoMenssagem;
 import com.desafio.model.Cliente;
 import com.desafio.service.ClienteService;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +25,21 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<Cliente> save(@RequestBody ClientePostDto clientePostDto) {
-        return new ResponseEntity<>(clienteService.save(clientePostDto), HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<>(clienteService.save(clientePostDto), HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new ExecaoMenssagem("CPF Inválido");
+        }
     }
 
-//    @PutMapping
-//    public ResponseEntity replace(@RequestBody ClientePutDto clientePutDto) {
-//        return new ResponseEntity<>(clienteService.replace(clientePutDto), HttpStatus.NO_CONTENT);
-//    }
-//
-//    @DeleteMapping(path = "/{id}")
-//    public ResponseEntity delete(@PathVariable Float cpf) {
-//        clienteService.delete(cpf);
-//        return new ResponseEntity(HttpStatus.NO_CONTENT);
-//    }
+    @PutMapping
+    public ResponseEntity replace(@RequestBody ClientePutDto clientePutDto) {
+        return new ResponseEntity<>(clienteService.replace(clientePutDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/{cpf}")
+    public ResponseEntity delete(@PathVariable Long cpf) {
+        clienteService.delete(cpf);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }
