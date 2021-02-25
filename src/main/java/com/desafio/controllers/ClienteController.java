@@ -25,11 +25,7 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<Cliente> save(@RequestBody ClientePostDto clientePostDto) {
-        try {
-            return new ResponseEntity<>(clienteService.save(clientePostDto), HttpStatus.CREATED);
-        } catch (Exception e) {
-            throw new ExecaoMenssagem("CPF Inválido");
-        }
+        return new ResponseEntity<>(clienteService.save(clientePostDto), HttpStatus.CREATED);
     }
 
     @PutMapping

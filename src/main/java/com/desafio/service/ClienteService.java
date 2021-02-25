@@ -28,6 +28,10 @@ public class ClienteService {
             throw new ExecaoMenssagem("Todos os campos não foram preenchidos");
         }
 
+        if(clienteRepository.findByCpf(clientePostDto.getCpf()) != null){
+            throw new ExecaoMenssagem("CPF já existe");
+        }
+
         Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePostDto);
         return clienteRepository.save(cliente);
     }

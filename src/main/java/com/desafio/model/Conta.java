@@ -20,7 +20,7 @@ public class Conta {
     private String tipoConta;
     private int digitoVerificador;
     @ManyToOne
-    @JoinColumn(name = "cpf")
+    @JoinColumn(name = "idCliente")
     private Cliente cliente;
 
 }
