@@ -31,21 +31,23 @@ public class ClienteService {
 
     public Cliente replace(ClientePutDto clientePutDto) {
         if (clientePutDto.getNome().isEmpty() || clientePutDto.getCpf().isEmpty() ||
-                clientePutDto.getEndereco().isEmpty() || clientePutDto.getTelefone().isEmpty() ||
-                clientePutDto.getId() <= 0) {
+                clientePutDto.getEndereco().isEmpty() || clientePutDto.getTelefone().isEmpty()) {
             throw new ExecaoMenssagem("Todos os campos não foram preenchidos");
         }
+        Cliente clienteCadastrado = findByIdOrErro(clientePutDto.getId());
+        Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePutDto);
+        cliente.setId(clienteCadastrado.getId());
 
-        return clienteRepository.save(ClienteMapper.INSTANCE.toCliente(clientePutDto));
+        return clienteRepository.save(cliente);
     }
 
     public void delete(Long id) {
-        clienteRepository.delete(findeByIdOrThrowBadRequest(id));
+        clienteRepository.delete(findByIdOrErro(id));
     }
 
-    public Cliente findeByIdOrThrowBadRequest(Long id) {
+    public Cliente findByIdOrErro(Long id) {
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new ExecaoMenssagem("Cliente nao encontrado"));
+                .orElseThrow(() -> new ExecaoMenssagem("Id não existe"));
     }
 
 }
