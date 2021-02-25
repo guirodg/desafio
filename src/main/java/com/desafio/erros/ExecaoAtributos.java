@@ -7,10 +7,9 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class ExecaoDetalhes {
+public class ExecaoAtributos {
     private String titulo;
     private int status;
-    private String detalhe;
     private String message;
     private LocalDateTime timestamp;
 }

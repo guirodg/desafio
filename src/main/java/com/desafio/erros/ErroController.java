@@ -8,16 +8,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
-public class ErroGlobal {
-    @ExceptionHandler(Execao.class)
-    public ResponseEntity<ExecaoDetalhes> requestExecao(Execao e) {
+public class ErroController {
+    @ExceptionHandler(ExecaoMenssagem.class)
+    public ResponseEntity<ExecaoAtributos> requestExecao(ExecaoMenssagem e) {
         return new ResponseEntity<>(
-                ExecaoDetalhes.builder()
+                ExecaoAtributos.builder()
                         .timestamp(LocalDateTime.now())
-                        .status(HttpStatus.BAD_REQUEST.value())
+                        .status(400)
                         .titulo("Bad Request")
-                        .detalhe(e.getMessage())
-                        .message(e.getClass().getName())
+                        .message(e.getMessage())
                         .build(), HttpStatus.BAD_REQUEST);
     }
 

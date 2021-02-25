@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class Execao extends RuntimeException {
-    public Execao(String message) {
+public class ExecaoMenssagem extends RuntimeException {
+    public ExecaoMenssagem(String message) {
         super(message);
     }
 }
