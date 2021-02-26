@@ -27,10 +27,8 @@ public class ClienteService {
                 clientePostDto.getCpf().isEmpty()) {
             throw new ExecaoMenssagem("Todos os campos não foram preenchidos");
         }
-
-        if (clienteRepository.findByCpf(clientePostDto.getCpf()) != null) {
+        if (clienteRepository.findByCpf(clientePostDto.getCpf()) != null)
             throw new ExecaoMenssagem("CPF já existe");
-        }
 
         Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePostDto);
         return clienteRepository.save(cliente);
@@ -47,7 +45,6 @@ public class ClienteService {
         cliente.setId(clienteSalvo.getId());
 
         return clienteRepository.save(cliente);
-
     }
 
     public void deletar(Long id) {
@@ -58,5 +55,4 @@ public class ClienteService {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ExecaoMenssagem("ID não existe"));
     }
-
 }

@@ -1,6 +1,7 @@
 package com.desafio.service;
 
-import com.desafio.dto.reqoperacao.OperacaoPostDto;
+import com.desafio.dto.reqoperacao.OperacaoSaldoDto;
+import com.desafio.dto.reqoperacao.OperacaoSaqueDto;
 import com.desafio.erros.ExecaoMenssagem;
 import com.desafio.mapper.OperacaoMapper;
 import com.desafio.model.Operacao;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,26 +20,25 @@ public class OperacaoService {
         return operacaoRepository.findAll();
     }
 
-    public Operacao salvarSaldo(OperacaoPostDto operacaoPostDto) {
-        if (operacaoPostDto.getSaldo() <= 0)
+    public Operacao salvarSaldo(OperacaoSaldoDto operacaoSaldoDto) {
+        if (operacaoSaldoDto.getSaldo() <= 0)
             throw new ExecaoMenssagem("Digite Saldo");
-        if (operacaoPostDto.getConta().getId() <= 0)
+        if (operacaoSaldoDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMenssagem("Digite id da conta que deseja relizar operação");
 
-        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
+        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoSaldoDto);
         return operacaoRepository.save(operacao);
     }
 
-    public Operacao salvarSaque(OperacaoPostDto operacaoPostDto) {
-        if (operacaoPostDto.getSaque() <= 0)
+    public Operacao salvarSaque(OperacaoSaqueDto operacaoSaqueDto) {
+        if (operacaoSaqueDto.getSaque() <= 0)
             throw new ExecaoMenssagem("Digite o valor do saque");
-        if (operacaoPostDto.getConta().getId() <= 0)
+        if (operacaoSaqueDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMenssagem("Digite id da conta que deseja relizar operação");
 
-        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
+        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoSaqueDto);
         return operacaoRepository.save(operacao);
     }
-
 
     public Operacao findByIdOrErro(Long id) {
         return operacaoRepository.findById(id)

@@ -1,6 +1,7 @@
 package com.desafio.controllers;
 
-import com.desafio.dto.reqoperacao.OperacaoPostDto;
+import com.desafio.dto.reqoperacao.OperacaoSaldoDto;
+import com.desafio.dto.reqoperacao.OperacaoSaqueDto;
 import com.desafio.model.Operacao;
 import com.desafio.service.OperacaoService;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,12 @@ public class OperacaoController {
     }
 
     @PostMapping(value = "/deposito")
-    public ResponseEntity<Operacao> salvarSaldo(@RequestBody OperacaoPostDto operacaoPostDto) {
-        return new ResponseEntity<>(operacaoService.salvarSaldo(operacaoPostDto), HttpStatus.CREATED);
+    public ResponseEntity<Operacao> salvarSaldo(@RequestBody OperacaoSaldoDto operacaoSaldoDto) {
+        return new ResponseEntity<>(operacaoService.salvarSaldo(operacaoSaldoDto), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/saque")
-    public ResponseEntity<Operacao> salvarSaque(@RequestBody OperacaoPostDto operacaoPostDto) {
-        return new ResponseEntity<>(operacaoService.salvarSaque(operacaoPostDto), HttpStatus.CREATED);
+    public ResponseEntity<Operacao> salvarSaque(@RequestBody OperacaoSaqueDto operacaoSaqueDto) {
+        return new ResponseEntity<>(operacaoService.salvarSaque(operacaoSaqueDto), HttpStatus.CREATED);
     }
 }

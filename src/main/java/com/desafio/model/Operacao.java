@@ -19,5 +19,7 @@ public class Operacao {
     private double saque;
     private double saldo;
     @ManyToOne
-    private Conta conta;
+    private Conta contaOrigem;
+    @ManyToOne
+    private Conta contaDestino;
 }

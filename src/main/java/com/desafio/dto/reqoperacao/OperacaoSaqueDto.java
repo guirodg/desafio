@@ -4,9 +4,7 @@ import com.desafio.model.Conta;
 import lombok.Data;
 
 @Data
-public class OperacaoPostDto {
-    private Long id;
-    private double saldo;
+public class OperacaoSaqueDto {
     private double saque;
-    private Conta conta;
+    private Conta contaOrigem;
 }
