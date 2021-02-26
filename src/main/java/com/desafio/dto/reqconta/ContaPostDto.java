@@ -8,5 +8,6 @@ public class ContaPostDto {
     private int numeroConta;
     private String tipoConta;
     private int digitoVerificador;
+    private double saldo;
     private Cliente cliente;
 }

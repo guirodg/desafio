@@ -19,6 +19,7 @@ public class Conta {
     private int numeroConta;
     private String tipoConta;
     private int digitoVerificador;
+    private double saldo;
     @ManyToOne
     private Cliente cliente;
 
