@@ -21,8 +21,13 @@ public class OperacaoController {
         return ResponseEntity.ok(operacaoService.listarTodos());
     }
 
-    @PostMapping
-    public ResponseEntity<Operacao> salvar(@RequestBody OperacaoPostDto operacaoPostDto) {
+    @PostMapping(value = "/deposito")
+    public ResponseEntity<Operacao> salvarSaldo(@RequestBody OperacaoPostDto operacaoPostDto) {
         return new ResponseEntity<>(operacaoService.salvarSaldo(operacaoPostDto), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/saque")
+    public ResponseEntity<Operacao> salvarSaque(@RequestBody OperacaoPostDto operacaoPostDto) {
+        return new ResponseEntity<>(operacaoService.salvarSaque(operacaoPostDto), HttpStatus.CREATED);
     }
 }

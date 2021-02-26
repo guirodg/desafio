@@ -4,19 +4,18 @@ import com.desafio.dto.reqoperacao.OperacaoPostDto;
 import com.desafio.erros.ExecaoMenssagem;
 import com.desafio.mapper.OperacaoMapper;
 import com.desafio.model.Operacao;
-import com.desafio.repository.ContaRepository;
 import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class OperacaoService {
     private final OperacaoRepository operacaoRepository;
-    private final ContaRepository contaRepository;
-    
+
     public List<Operacao> listarTodos() {
         return operacaoRepository.findAll();
     }
@@ -25,7 +24,17 @@ public class OperacaoService {
         if (operacaoPostDto.getSaldo() <= 0)
             throw new ExecaoMenssagem("Digite Saldo");
         if (operacaoPostDto.getConta().getId() <= 0)
-            throw new ExecaoMenssagem("Digite Destino da conta");
+            throw new ExecaoMenssagem("Digite id da conta que deseja relizar operação");
+
+        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
+        return operacaoRepository.save(operacao);
+    }
+
+    public Operacao salvarSaque(OperacaoPostDto operacaoPostDto) {
+        if (operacaoPostDto.getSaque() <= 0)
+            throw new ExecaoMenssagem("Digite o valor do saque");
+        if (operacaoPostDto.getConta().getId() <= 0)
+            throw new ExecaoMenssagem("Digite id da conta que deseja relizar operação");
 
         Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
         return operacaoRepository.save(operacao);
