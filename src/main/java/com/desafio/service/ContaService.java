@@ -28,6 +28,7 @@ public class ContaService {
             throw new ExecaoMenssagem("Preencha todos os campos");
         }
         Conta conta = ContaMapper.INSTANCE.toConta(contaPostDto);
+        conta.setSaldo(0);
         return contaRepository.save(conta);
     }
 

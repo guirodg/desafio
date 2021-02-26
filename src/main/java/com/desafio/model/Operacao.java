@@ -12,15 +12,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Builder
-public class Conta {
+public class Operacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int numeroConta;
-    private String tipoConta;
-    private int digitoVerificador;
-    private double saldo;
+    private double saque;
     @ManyToOne
-    private Cliente cliente;
-
+    private Conta conta;
 }
