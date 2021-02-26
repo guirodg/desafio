@@ -2,7 +2,6 @@ package com.desafio.controllers;
 
 import com.desafio.dto.reqcliente.ClientePostDto;
 import com.desafio.dto.reqcliente.ClientePutDto;
-import com.desafio.erros.ExecaoMenssagem;
 import com.desafio.model.Cliente;
 import com.desafio.service.ClienteService;
 import lombok.RequiredArgsConstructor;
@@ -19,23 +18,23 @@ public class ClienteController {
     private final ClienteService clienteService;
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> list() {
-        return ResponseEntity.ok(clienteService.listAll());
+    public ResponseEntity<List<Cliente>> listar() {
+        return ResponseEntity.ok(clienteService.listarTodos());
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> save(@RequestBody ClientePostDto clientePostDto) {
-        return new ResponseEntity<>(clienteService.save(clientePostDto), HttpStatus.CREATED);
+    public ResponseEntity<Cliente> salvar(@RequestBody ClientePostDto clientePostDto) {
+        return new ResponseEntity<>(clienteService.salvar(clientePostDto), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity replace(@RequestBody ClientePutDto clientePutDto) {
-        return new ResponseEntity<>(clienteService.replace(clientePutDto), HttpStatus.OK);
+    public ResponseEntity atualizar(@RequestBody ClientePutDto clientePutDto) {
+        return new ResponseEntity<>(clienteService.atualizar(clientePutDto), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/{cpf}")
-    public ResponseEntity delete(@PathVariable Long cpf) {
-        clienteService.delete(cpf);
-        return new ResponseEntity(HttpStatus.OK);
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity deletar(@PathVariable Long id) {
+        clienteService.deletar(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

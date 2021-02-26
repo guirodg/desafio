@@ -16,11 +16,11 @@ import java.util.List;
 public class ClienteService {
     private final ClienteRepository clienteRepository;
 
-    public List<Cliente> listAll() {
+    public List<Cliente> listarTodos() {
         return clienteRepository.findAll();
     }
 
-    public Cliente save(ClientePostDto clientePostDto) {
+    public Cliente salvar(ClientePostDto clientePostDto) {
         if (clientePostDto.getNome().isEmpty() ||
                 clientePostDto.getEndereco().isEmpty() ||
                 clientePostDto.getTelefone().isEmpty() ||
@@ -28,7 +28,7 @@ public class ClienteService {
             throw new ExecaoMenssagem("Todos os campos não foram preenchidos");
         }
 
-        if(clienteRepository.findByCpf(clientePostDto.getCpf()) != null){
+        if (clienteRepository.findByCpf(clientePostDto.getCpf()) != null) {
             throw new ExecaoMenssagem("CPF já existe");
         }
 
@@ -36,26 +36,27 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    public Cliente replace(ClientePutDto clientePutDto) {
+    public Cliente atualizar(ClientePutDto clientePutDto) {
         if (clientePutDto.getNome().isEmpty() ||
-                clientePutDto.getEndereco().isEmpty() || clientePutDto.getTelefone().isEmpty()) {
+                clientePutDto.getEndereco().isEmpty() ||
+                clientePutDto.getTelefone().isEmpty()) {
             throw new ExecaoMenssagem("Todos os campos não foram preenchidos");
         }
-        Cliente clienteCadastrado = findByCpfOrErro(clientePutDto.getId());
+        Cliente clienteSalvo = findByIdOrErro(clientePutDto.getId());
         Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePutDto);
-        cliente.setCpf(clienteCadastrado.getCpf());
+        cliente.setId(clienteSalvo.getId());
 
         return clienteRepository.save(cliente);
 
     }
 
-    public void delete(Long cpf) {
-        clienteRepository.delete(findByCpfOrErro(cpf));
+    public void deletar(Long id) {
+        clienteRepository.delete(findByIdOrErro(id));
     }
 
-    public Cliente findByCpfOrErro(Long cpf) {
-        return clienteRepository.findById(cpf)
-                .orElseThrow(() -> new ExecaoMenssagem("CPF não existe"));
+    public Cliente findByIdOrErro(Long id) {
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ExecaoMenssagem("ID não existe"));
     }
 
 }
