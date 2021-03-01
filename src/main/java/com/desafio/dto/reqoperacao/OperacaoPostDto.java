@@ -8,4 +8,5 @@ public class OperacaoPostDto {
     private double valor;
     private String operacao;
     private Conta contaOrigem;
+    private Conta contaDestino;
 }

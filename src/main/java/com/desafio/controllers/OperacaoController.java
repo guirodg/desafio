@@ -31,5 +31,10 @@ public class OperacaoController {
         return new ResponseEntity<>(operacaoService.salvarSaque(operacaoPostDto), HttpStatus.CREATED);
     }
 
+    @PostMapping(path = "/transferencia")
+    public ResponseEntity<Operacao> salvarTransferencia(@RequestBody OperacaoPostDto operacaoPostDto) {
+        return new ResponseEntity<>(operacaoService.salvarTransferencia(operacaoPostDto), HttpStatus.CREATED);
+    }
+
 
 }

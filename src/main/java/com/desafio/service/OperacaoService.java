@@ -58,6 +58,27 @@ public class OperacaoService {
         return operacaoRepository.save(operacao);
     }
 
+    public Operacao salvarTransferencia(OperacaoPostDto operacaoPostDto) {
+        if (operacaoPostDto.getValor() <=0)
+            throw new ExecaoMenssagem("Digite o valor para a transferencia");
+        if (operacaoPostDto.getContaOrigem().getId() <= 0)
+            throw new ExecaoMenssagem("Digite id da conta origem");
+        if (operacaoPostDto.getContaDestino().getId() <= 0)
+            throw new ExecaoMenssagem("Digite id da conta destino");
+
+        Optional<Conta> contaOrigem = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
+        if (contaOrigem.get().getSaldo() >= operacaoPostDto.getValor()){ // saldo da conta > valor post
+            contaOrigem.get().setSaldo(contaOrigem.get().getSaldo() - operacaoPostDto.getValor());
+
+            Optional<Conta> contaDestino = contaRepository.findById(operacaoPostDto.getContaDestino().getId());
+            contaDestino.get().setSaldo(contaDestino.get().getSaldo() + operacaoPostDto.getValor());
+            contaRepository.save(contaDestino.get());
+            contaRepository.save(contaOrigem.get());
+        }
+        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
+        return operacaoRepository.save(operacao);
+    }
+
     public Operacao findByIdOrErro(Long id) {
         return operacaoRepository.findById(id)
                 .orElseThrow(() -> new ExecaoMenssagem("ID não existe"));
