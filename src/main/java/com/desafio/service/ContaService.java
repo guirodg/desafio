@@ -2,7 +2,7 @@ package com.desafio.service;
 
 import com.desafio.dto.reqconta.ContaPostDto;
 import com.desafio.dto.reqconta.ContaPutDto;
-import com.desafio.erros.ExecaoMenssagem;
+import com.desafio.erros.ExecaoMensagem;
 import com.desafio.mapper.ContaMapper;
 import com.desafio.model.Conta;
 import com.desafio.repository.ContaRepository;
@@ -25,7 +25,7 @@ public class ContaService {
                 contaPostDto.getDigitoVerificador() < 0 ||
                 contaPostDto.getTipoConta().isEmpty() ||
                 contaPostDto.getCliente().getId() <= 0) {
-            throw new ExecaoMenssagem("Preencha todos os campos");
+            throw new ExecaoMensagem("Preencha todos os campos");
         }
         Conta conta = ContaMapper.INSTANCE.toConta(contaPostDto);
         conta.setSaldo(0);
@@ -37,7 +37,7 @@ public class ContaService {
                 contaPutDto.getDigitoVerificador() < 0 ||
                 contaPutDto.getTipoConta().isEmpty() ||
                 contaPutDto.getCliente().getId() <= 0) {
-            throw new ExecaoMenssagem("Preencha todos os campos");
+            throw new ExecaoMensagem("Preencha todos os campos");
         }
         Conta contaSalva = findByIdOrErro(contaPutDto.getId());
         Conta conta = ContaMapper.INSTANCE.toConta(contaPutDto);
@@ -51,6 +51,6 @@ public class ContaService {
 
     public Conta findByIdOrErro(Long id) {
         return contaRepository.findById(id)
-                .orElseThrow(() -> new ExecaoMenssagem("ID não existe"));
+                .orElseThrow(() -> new ExecaoMensagem("ID não existe"));
     }
 }

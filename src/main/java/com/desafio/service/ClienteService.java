@@ -2,7 +2,7 @@ package com.desafio.service;
 
 import com.desafio.dto.reqcliente.ClientePostDto;
 import com.desafio.dto.reqcliente.ClientePutDto;
-import com.desafio.erros.ExecaoMenssagem;
+import com.desafio.erros.ExecaoMensagem;
 import com.desafio.mapper.ClienteMapper;
 import com.desafio.model.Cliente;
 import com.desafio.repository.ClienteRepository;
@@ -25,10 +25,10 @@ public class ClienteService {
                 clientePostDto.getEndereco().isEmpty() ||
                 clientePostDto.getTelefone().isEmpty() ||
                 clientePostDto.getCpf().isEmpty()) {
-            throw new ExecaoMenssagem("Todos os campos não foram preenchidos");
+            throw new ExecaoMensagem("Todos os campos não foram preenchidos");
         }
         if (clienteRepository.findByCpf(clientePostDto.getCpf()) != null)
-            throw new ExecaoMenssagem("CPF já existe");
+            throw new ExecaoMensagem("CPF já existe");
 
         Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePostDto);
         return clienteRepository.save(cliente);
@@ -38,7 +38,7 @@ public class ClienteService {
         if (clientePutDto.getNome().isEmpty() ||
                 clientePutDto.getEndereco().isEmpty() ||
                 clientePutDto.getTelefone().isEmpty()) {
-            throw new ExecaoMenssagem("Todos os campos não foram preenchidos");
+            throw new ExecaoMensagem("Todos os campos não foram preenchidos");
         }
         Cliente clienteSalvo = findByIdOrErro(clientePutDto.getId());
         Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePutDto);
@@ -53,6 +53,6 @@ public class ClienteService {
 
     public Cliente findByIdOrErro(Long id) {
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new ExecaoMenssagem("ID não existe"));
+                .orElseThrow(() -> new ExecaoMensagem("ID não existe"));
     }
 }
