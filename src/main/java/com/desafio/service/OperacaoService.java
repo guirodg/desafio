@@ -10,7 +10,6 @@ import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,19 +19,19 @@ public class OperacaoService {
     private final OperacaoRepository operacaoRepository;
     private final ContaRepository contaRepository;
 
-    public List<Operacao> listarTodos(Long contaOrigem) {
-        return operacaoRepository.findAllById(Collections.singleton(contaOrigem));
+    public List<Operacao> listarExtrato(Long contaId) {
+        return operacaoRepository.findAllByContaOrigemId(contaId);
     }
 
     public Operacao salvarDeposito(OperacaoPostDto operacaoPostDto) {
         if (operacaoPostDto.getOperacao().isEmpty())
             throw new ExecaoMensagem("Digite Saldo");
-        if (operacaoPostDto.getContaDestino().getId() <= 0)
+        if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta que deseja relizar operação");
         if (operacaoPostDto.getValor() <= 0)
             throw new ExecaoMensagem("Digite 'valor' para realizar deposito");
 
-        Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaDestino().getId());
+        Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
         if (!conta.isPresent())
             throw new ExecaoMensagem("Id da contaDestino não existe");
         if (conta.isPresent()) {
@@ -40,19 +39,19 @@ public class OperacaoService {
             contaRepository.save(conta.get());
         }
         Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
-        operacao.setContaDestino(operacaoPostDto.getContaDestino());
+        operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
         return operacaoRepository.save(operacao);
     }
 
     public Operacao salvarSaque(OperacaoPostDto operacaoPostDto) {
         if (operacaoPostDto.getValor() <= 0)
             throw new ExecaoMensagem("Digite o valor do saque");
-        if (operacaoPostDto.getContaDestino().getId() <= 0)
+        if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta que deseja relizar operação");
         if (operacaoPostDto.getValor() <= 0)
             throw new ExecaoMensagem("Digite 'valor' para realizar saque");
 
-        Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaDestino().getId());
+        Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
         if (!conta.isPresent())
             throw new ExecaoMensagem("Id da contaDestino não existe");
         if (conta.get().getSaldo() < operacaoPostDto.getValor())
@@ -69,7 +68,7 @@ public class OperacaoService {
             conta.get().setSaldo(conta.get().getSaldo() - 10);
 
         Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
-        operacao.setContaDestino(operacaoPostDto.getContaDestino());
+        operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
         return operacaoRepository.save(operacao);
     }
 
@@ -78,7 +77,7 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite o valor para a transferencia");
         if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta origem");
-        if (operacaoPostDto.getContaDestino().getId() <= 0)
+        if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta destino");
 
         Optional<Conta> contaOrigem = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
@@ -89,7 +88,7 @@ public class OperacaoService {
         if (contaOrigem.get().getSaldo() >= operacaoPostDto.getValor()) {
             contaOrigem.get().setSaldo(contaOrigem.get().getSaldo() - operacaoPostDto.getValor());
 
-            Optional<Conta> contaDestino = contaRepository.findById(operacaoPostDto.getContaDestino().getId());
+            Optional<Conta> contaDestino = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
             if (!contaDestino.isPresent())
                 throw new ExecaoMensagem("Id da contaDestino não existe");
             contaDestino.get().setSaldo(contaDestino.get().getSaldo() + operacaoPostDto.getValor());
@@ -97,7 +96,7 @@ public class OperacaoService {
             contaRepository.save(contaOrigem.get());
         }
         Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
-        operacao.setContaDestino(operacaoPostDto.getContaDestino());
+        operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
         operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
         return operacaoRepository.save(operacao);
     }
