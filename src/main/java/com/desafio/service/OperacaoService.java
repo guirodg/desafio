@@ -57,12 +57,17 @@ public class OperacaoService {
             throw new ExecaoMensagem("Id da contaDestino não existe");
         if (conta.get().getSaldo() < operacaoPostDto.getValor())
             throw new ExecaoMensagem("Saldo insuficiente");
+
         if (conta.isPresent()) {
+            conta.get().setLimiteSaque(conta.get().getLimiteSaque() - 1);
             if (conta.get().getSaldo() >= operacaoPostDto.getValor()) {
                 conta.get().setSaldo(conta.get().getSaldo() - operacaoPostDto.getValor());
                 contaRepository.save(conta.get());
             }
         }
+        if (conta.get().getLimiteSaque() <= 0 && conta.get().getTipoConta().equals("pessoa fisica"))
+            conta.get().setSaldo(conta.get().getSaldo() - 10);
+
         Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
         operacao.setContaDestino(operacaoPostDto.getContaDestino());
         return operacaoRepository.save(operacao);

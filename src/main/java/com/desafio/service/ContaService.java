@@ -27,8 +27,16 @@ public class ContaService {
                 contaPostDto.getCliente().getId() <= 0) {
             throw new ExecaoMensagem("Preencha todos os campos");
         }
+
         Conta conta = ContaMapper.INSTANCE.toConta(contaPostDto);
         conta.setSaldo(0);
+        if (contaPostDto.getTipoConta().equals("pessoa fisica"))
+            conta.setLimiteSaque(5);
+        if (contaPostDto.getTipoConta().equals("pessoa juridica"))
+            conta.setLimiteSaque(50);
+        if (contaPostDto.getTipoConta().equals("governamental"))
+            conta.setLimiteSaque(250);
+
         return contaRepository.save(conta);
     }
 
