@@ -1,8 +1,10 @@
 package com.desafio.dto.reqcliente;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class ClientePutDto {
     private Long id;
     private String nome;

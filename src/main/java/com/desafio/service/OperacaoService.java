@@ -10,6 +10,7 @@ import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +20,8 @@ public class OperacaoService {
     private final OperacaoRepository operacaoRepository;
     private final ContaRepository contaRepository;
 
-    public List<Operacao> listarTodos() {
-        return operacaoRepository.findAll();
+    public List<Operacao> listarTodos(Long contaOrigem) {
+        return operacaoRepository.findAllById(Collections.singleton(contaOrigem));
     }
 
     public Operacao salvarDeposito(OperacaoPostDto operacaoPostDto) {

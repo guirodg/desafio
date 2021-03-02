@@ -17,8 +17,8 @@ public class OperacaoController {
     private final OperacaoService operacaoService;
 
     @GetMapping
-    public ResponseEntity<List<Operacao>> listarTodos() {
-        return ResponseEntity.ok(operacaoService.listarTodos());
+    public ResponseEntity<List<Operacao>> listarTodos(@RequestParam Long contaOrigem) {
+        return ResponseEntity.ok(operacaoService.listarTodos(contaOrigem));
     }
 
     @PostMapping(path = "/deposito")
