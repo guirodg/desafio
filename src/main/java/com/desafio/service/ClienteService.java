@@ -9,16 +9,10 @@ import com.desafio.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
     private final ClienteRepository clienteRepository;
-
-    public List<Cliente> listarTodos() {
-        return clienteRepository.findAll();
-    }
 
     public Cliente salvar(ClientePostDto clientePostDto) {
         if (clientePostDto.getNome().isEmpty() ||
@@ -40,7 +34,7 @@ public class ClienteService {
                 clientePutDto.getTelefone().isEmpty()) {
             throw new ExecaoMensagem("Todos os campos não foram preenchidos");
         }
-        Cliente clienteSalvo = findByIdOrErro(clientePutDto.getId());
+        Cliente clienteSalvo = encontreIdOuErro(clientePutDto.getId());
         Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePutDto);
         cliente.setId(clienteSalvo.getId());
 
@@ -48,10 +42,11 @@ public class ClienteService {
     }
 
     public void deletar(Long id) {
-        clienteRepository.delete(findByIdOrErro(id));
+        clienteRepository.delete(encontreIdOuErro(id));
     }
 
-    public Cliente findByIdOrErro(Long id) {
+
+    public Cliente encontreIdOuErro(Long id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ExecaoMensagem("ID não existe"));
     }

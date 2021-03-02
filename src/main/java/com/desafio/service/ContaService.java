@@ -16,10 +16,6 @@ import java.util.List;
 public class ContaService {
     private final ContaRepository contaRepository;
 
-    public List<Conta> listarTodos() {
-        return contaRepository.findAll();
-    }
-
     public Conta salvar(ContaPostDto contaPostDto) {
         if (contaPostDto.getNumeroConta() <= 0 ||
                 contaPostDto.getDigitoVerificador() < 0 ||
@@ -47,17 +43,17 @@ public class ContaService {
                 contaPutDto.getCliente().getId() <= 0) {
             throw new ExecaoMensagem("Preencha todos os campos");
         }
-        Conta contaSalva = findByIdOrErro(contaPutDto.getId());
+        Conta contaSalva = encontreIdOuErro(contaPutDto.getId());
         Conta conta = ContaMapper.INSTANCE.toConta(contaPutDto);
         conta.setId(contaSalva.getId());
         return contaRepository.save(conta);
     }
 
     public void deletar(Long id) {
-        contaRepository.delete(findByIdOrErro(id));
+        contaRepository.delete(encontreIdOuErro(id));
     }
 
-    public Conta findByIdOrErro(Long id) {
+    public Conta encontreIdOuErro(Long id) {
         return contaRepository.findById(id)
                 .orElseThrow(() -> new ExecaoMensagem("ID não existe"));
     }

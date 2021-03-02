@@ -9,17 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("clientes")
 @RequiredArgsConstructor
 public class ClienteController {
     private final ClienteService clienteService;
 
-    @GetMapping
-    public ResponseEntity<List<Cliente>> listarTodos() {
-        return ResponseEntity.ok(clienteService.listarTodos());
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<Cliente> listarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(clienteService.encontreIdOuErro(id));
     }
 
     @PostMapping

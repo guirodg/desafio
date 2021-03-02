@@ -9,17 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("contas")
 @RequiredArgsConstructor
 public class ContaController {
     private final ContaService contaService;
 
-    @GetMapping
-    public ResponseEntity<List<Conta>> listar() {
-        return ResponseEntity.ok(contaService.listarTodos());
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<Conta> listarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(contaService.encontreIdOuErro(id));
     }
 
     @PostMapping
