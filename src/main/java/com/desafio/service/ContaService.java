@@ -3,14 +3,18 @@ package com.desafio.service;
 import com.desafio.dto.reqconta.ContaPostDto;
 import com.desafio.dto.reqconta.ContaPutDto;
 import com.desafio.erros.ExecaoMensagem;
+import com.desafio.externo.ControleConta;
 import com.desafio.mapper.ContaMapper;
 import com.desafio.model.Conta;
 import com.desafio.repository.ContaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ContaService {
     private final ContaRepository contaRepository;
 
@@ -24,14 +28,21 @@ public class ContaService {
 
         Conta conta = ContaMapper.INSTANCE.toConta(contaPostDto);
         conta.setSaldo(0);
-        if (contaPostDto.getTipoConta().equals("pessoa fisica"))
-            conta.setLimiteSaque(5);
-        if (contaPostDto.getTipoConta().equals("pessoa juridica"))
-            conta.setLimiteSaque(50);
-        if (contaPostDto.getTipoConta().equals("governamental"))
-            conta.setLimiteSaque(250);
 
-        return contaRepository.save(conta);
+        int limeteSaque = 5;
+        if (contaPostDto.getTipoConta().equals("pessoa fisica"))
+            limeteSaque = 5;
+        if (contaPostDto.getTipoConta().equals("pessoa juridica"))
+            limeteSaque = 50;
+        if (contaPostDto.getTipoConta().equals("governamental"))
+            limeteSaque = 250;
+
+        Conta contaSalva = contaRepository.save(conta);
+
+        ControleConta controleConta = ControleConta.builder().idConta(contaSalva.getId()).limeteSaque(limeteSaque).build();
+        new RestTemplate().postForEntity("http://localhost:8081/controle", controleConta, Conta.class);
+
+        return contaSalva;
     }
 
     public Conta atualizar(ContaPutDto contaPutDto) {
