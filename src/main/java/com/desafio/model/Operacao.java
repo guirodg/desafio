@@ -17,7 +17,7 @@ public class Operacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private double valor;
-    private String operacao;
+    private String tipoOperacao;
     @ManyToOne
     private Conta contaOrigem;
     @ManyToOne

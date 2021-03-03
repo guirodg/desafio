@@ -2,8 +2,10 @@ package com.desafio.service;
 
 import com.desafio.dto.reqcliente.ClientePostDto;
 import com.desafio.dto.reqcliente.ClientePutDto;
+import com.desafio.erros.ExecaoMensagem;
 import com.desafio.model.Cliente;
 import com.desafio.repository.ClienteRepository;
+import com.desafio.util.UtilCliente;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,6 +76,23 @@ class ClienteServiceTest {
         Assertions.assertThat(clienteService).isNotNull();
     }
 
+    @Test
+    void salvarCliente_Vazio() {
+        ClientePostDto clientePostDtoSalvar = UtilCliente.criarClientePostDtoVazio();
+
+        Assertions.assertThatThrownBy(() -> this.clienteService.salvar(clientePostDtoSalvar))
+                .isInstanceOf(ExecaoMensagem.class)
+                .hasMessageContaining("Todos os campos não foram preenchidos");
+    }
+
+    @Test
+    void atualizarCliente_Vazio() {
+        ClientePutDto clientePutDtoSalvar = UtilCliente.criarClientePutDtoVazio();
+
+        Assertions.assertThatThrownBy(() -> this.clienteService.atualizar(clientePutDtoSalvar))
+                .isInstanceOf(ExecaoMensagem.class)
+                .hasMessageContaining("Todos os campos não foram preenchidos");
+    }
 
     private Cliente criarCliente() {
         return Cliente.builder()

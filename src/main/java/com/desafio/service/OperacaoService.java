@@ -24,8 +24,8 @@ public class OperacaoService {
     }
 
     public Operacao salvarDeposito(OperacaoPostDto operacaoPostDto) {
-        if (operacaoPostDto.getOperacao().isEmpty())
-            throw new ExecaoMensagem("Digite Saldo");
+        if (operacaoPostDto.getTipoOperacao().isEmpty())
+            throw new ExecaoMensagem("Digite tipo da Operacao");
         if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta que deseja relizar operação");
         if (operacaoPostDto.getValor() <= 0)
@@ -33,7 +33,7 @@ public class OperacaoService {
 
         Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
         if (!conta.isPresent())
-            throw new ExecaoMensagem("Id da contaDestino não existe");
+            throw new ExecaoMensagem("Id da contaOrigem não existe");
         if (conta.isPresent()) {
             conta.get().setSaldo(conta.get().getSaldo() + operacaoPostDto.getValor());
             contaRepository.save(conta.get());
@@ -48,12 +48,10 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite o valor do saque");
         if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta que deseja relizar operação");
-        if (operacaoPostDto.getValor() <= 0)
-            throw new ExecaoMensagem("Digite 'valor' para realizar saque");
 
         Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
         if (!conta.isPresent())
-            throw new ExecaoMensagem("Id da contaDestino não existe");
+            throw new ExecaoMensagem("Id da contaOrigem não existe");
         if (conta.get().getSaldo() < operacaoPostDto.getValor())
             throw new ExecaoMensagem("Saldo insuficiente");
 
@@ -77,7 +75,7 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite o valor para a transferencia");
         if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta origem");
-        if (operacaoPostDto.getContaOrigem().getId() <= 0)
+        if (operacaoPostDto.getContaDestino().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta destino");
 
         Optional<Conta> contaOrigem = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());

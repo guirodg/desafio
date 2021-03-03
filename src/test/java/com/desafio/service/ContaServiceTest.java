@@ -2,9 +2,11 @@ package com.desafio.service;
 
 import com.desafio.dto.reqconta.ContaPostDto;
 import com.desafio.dto.reqconta.ContaPutDto;
+import com.desafio.erros.ExecaoMensagem;
 import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
 import com.desafio.repository.ContaRepository;
+import com.desafio.util.UtilConta;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,12 +77,31 @@ class ContaServiceTest {
         Assertions.assertThat(contaService).isNotNull();
     }
 
+    @Test
+    void salvarConta_Vazio() {
+        ContaPostDto clientePostDtoSalvar = UtilConta.criarContaPostDtoVazio();
+
+        Assertions.assertThatThrownBy(() -> this.contaService.salvar(clientePostDtoSalvar))
+                .isInstanceOf(ExecaoMensagem.class)
+                .hasMessageContaining("Preencha todos os campos");
+    }
+
+
+    @Test
+    void atualizarConta_Vazio() {
+        ContaPutDto clientePostDtoSalvar = UtilConta.criarContaPutDtoVazio();
+
+        Assertions.assertThatThrownBy(() -> this.contaService.atualizar(clientePostDtoSalvar))
+                .isInstanceOf(ExecaoMensagem.class)
+                .hasMessageContaining("Preencha todos os campos");
+    }
+
 
     private Conta criarConta() {
         return Conta.builder()
                 .id(1l)
                 .numeroConta(4564566)
-                .tipoConta("Test")
+                .tipoConta("pessoa fisica")
                 .digitoVerificador(454564)
                 .saldo(0)
                 .cliente(Cliente.builder().id(1l).build())
@@ -91,7 +112,7 @@ class ContaServiceTest {
     private ContaPostDto criarContaPostDto() {
         return ContaPostDto.builder()
                 .numeroConta(4564566)
-                .tipoConta("Test")
+                .tipoConta("pessoa fisica")
                 .cliente(Cliente.builder().id(1l).build())
                 .digitoVerificador(454564)
                 .saldo(0)
