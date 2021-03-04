@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ControleConta {
+public class ControleContaExterno {
     private int limeteSaque;
     private Long idConta;
+    private String tipoConta;
 }

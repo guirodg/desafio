@@ -1,5 +1,6 @@
 package com.desafio.controllers;
 
+import com.desafio.dto.reqconta.ContaPutDtoDesconto;
 import com.desafio.dto.reqconta.ContaPostDto;
 import com.desafio.dto.reqconta.ContaPutDto;
 import com.desafio.model.Conta;
@@ -28,6 +29,11 @@ public class ContaController {
     @PutMapping
     public ResponseEntity<Conta> atualizar(@RequestBody ContaPutDto contaPutDto) {
         return new ResponseEntity<>(contaService.atualizar(contaPutDto), HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/descontar")
+    public ResponseEntity<Conta> atualizarSaldo(@RequestBody ContaPutDtoDesconto contaPutDtoDesconto) {
+        return new ResponseEntity<>(contaService.atualizarSaldo(contaPutDtoDesconto), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")

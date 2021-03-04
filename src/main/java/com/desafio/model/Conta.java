@@ -22,6 +22,4 @@ public class Conta {
     private double saldo;
     @ManyToOne
     private Cliente cliente;
-    private int limiteSaque;
-
 }

@@ -219,7 +219,6 @@ class OperacaoServiceTest {
                 .digitoVerificador(454564)
                 .saldo(10)
                 .cliente(Cliente.builder().id(1l).build())
-                .limiteSaque(0)
                 .build();
     }
 

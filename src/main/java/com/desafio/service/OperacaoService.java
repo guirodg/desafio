@@ -2,6 +2,7 @@ package com.desafio.service;
 
 import com.desafio.dto.reqoperacao.OperacaoPostDto;
 import com.desafio.erros.ExecaoMensagem;
+import com.desafio.externo.ControleContaExterno;
 import com.desafio.mapper.OperacaoMapper;
 import com.desafio.model.Conta;
 import com.desafio.model.Operacao;
@@ -9,6 +10,7 @@ import com.desafio.repository.ContaRepository;
 import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,15 +57,13 @@ public class OperacaoService {
         if (conta.get().getSaldo() < operacaoPostDto.getValor())
             throw new ExecaoMensagem("Saldo insuficiente");
 
-        if (conta.isPresent()) {
-            conta.get().setLimiteSaque(conta.get().getLimiteSaque() - 1);
-            if (conta.get().getSaldo() >= operacaoPostDto.getValor()) {
-                conta.get().setSaldo(conta.get().getSaldo() - operacaoPostDto.getValor());
-                contaRepository.save(conta.get());
-            }
+        if (conta.get().getSaldo() >= operacaoPostDto.getValor()) {
+            conta.get().setSaldo(conta.get().getSaldo() - operacaoPostDto.getValor());
+            contaRepository.save(conta.get());
         }
-        if (conta.get().getLimiteSaque() <= 0 && conta.get().getTipoConta().equals("pessoa fisica"))
-            conta.get().setSaldo(conta.get().getSaldo() - 10);
+
+        ControleContaExterno controleContaExterno = ControleContaExterno.builder().idConta(operacaoPostDto.getContaOrigem().getId()).build();
+        new RestTemplate().put("http://localhost:8081/controle", controleContaExterno);
 
         Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
         operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
