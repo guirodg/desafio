@@ -2,6 +2,7 @@ package com.desafio.service;
 
 import com.desafio.dto.reqconta.ContaPostDto;
 import com.desafio.dto.reqconta.ContaPutDto;
+import com.desafio.dto.reqconta.ContaPutDtoDesconto;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
@@ -56,6 +57,20 @@ class ContaServiceTest {
     }
 
     @Test
+    void atualizarContaSaldo_ComSucesso() {
+        Conta contaSalvar = this.criarConta();
+        ContaPutDtoDesconto contaPutDto = this.criarContaPutDtoDesconto();
+
+        when(contaRepositoryMock.save(any(Conta.class)))
+                .thenReturn(contaSalvar);
+        when(contaRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(contaSalvar));
+
+        Conta conta = contaService.atualizarSaldo(contaPutDto);
+        Assertions.assertThat(conta).isNotNull();
+    }
+
+    @Test
     void buscarPorId() {
         Conta contaSalvar = this.criarConta();
 
@@ -105,7 +120,6 @@ class ContaServiceTest {
                 .digitoVerificador(454564)
                 .saldo(0)
                 .cliente(Cliente.builder().id(1l).build())
-                .limiteSaque(0)
                 .build();
     }
 
@@ -126,6 +140,13 @@ class ContaServiceTest {
                 .tipoConta("Test")
                 .cliente(Cliente.builder().id(1l).build())
                 .digitoVerificador(454564)
+                .build();
+    }
+
+    private ContaPutDtoDesconto criarContaPutDtoDesconto(){
+        return ContaPutDtoDesconto.builder()
+                .id(1l)
+                .saldo(10)
                 .build();
     }
 }
