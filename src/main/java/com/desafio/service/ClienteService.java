@@ -31,7 +31,7 @@ public class ClienteService {
     public Cliente atualizar(ClientePutDto clientePutDto) {
         if (clientePutDto.getNome().isEmpty() ||
                 clientePutDto.getEndereco().isEmpty() ||
-                clientePutDto.getTelefone().isEmpty()) {
+                clientePutDto.getTelefone().isEmpty() || clientePutDto.getCpf().isEmpty()) {
             throw new ExecaoMensagem("Todos os campos não foram preenchidos");
         }
         Cliente clienteSalvo = encontreIdOuErro(clientePutDto.getId());

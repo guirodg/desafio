@@ -7,6 +7,7 @@ import com.desafio.erros.ExecaoMensagem;
 import com.desafio.externo.ControleContaExterno;
 import com.desafio.mapper.ContaMapper;
 import com.desafio.model.Conta;
+import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +21,17 @@ import java.util.Optional;
 @Slf4j
 public class ContaService {
     private final ContaRepository contaRepository;
+    private final ClienteRepository clienteRepository;
 
     public Conta salvar(ContaPostDto contaPostDto) {
         if (contaPostDto.getNumeroConta() <= 0 ||
-                contaPostDto.getDigitoVerificador() < 0 ||
+                contaPostDto.getDigitoVerificador() <= 0 ||
                 contaPostDto.getTipoConta().isEmpty() ||
                 contaPostDto.getCliente().getId() <= 0) {
             throw new ExecaoMensagem("Preencha todos os campos");
         }
+        if (!clienteRepository.findById(contaPostDto.getCliente().getId()).isPresent())
+            throw new ExecaoMensagem("ID do cliente informado não existe");
 
         Conta conta = ContaMapper.INSTANCE.toConta(contaPostDto);
         conta.setSaldo(0);
@@ -51,7 +55,7 @@ public class ContaService {
 
     public Conta atualizar(ContaPutDto contaPutDto) {
         if (contaPutDto.getNumeroConta() <= 0 ||
-                contaPutDto.getDigitoVerificador() < 0 ||
+                contaPutDto.getDigitoVerificador() <=0 ||
                 contaPutDto.getTipoConta().isEmpty() ||
                 contaPutDto.getCliente().getId() <= 0) {
             throw new ExecaoMensagem("Preencha todos os campos");

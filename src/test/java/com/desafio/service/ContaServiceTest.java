@@ -6,6 +6,7 @@ import com.desafio.dto.reqconta.ContaPutDtoDesconto;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
+import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
 import com.desafio.util.UtilConta;
 import org.assertj.core.api.Assertions;
@@ -29,17 +30,22 @@ class ContaServiceTest {
     @Mock
     private ContaRepository contaRepositoryMock;
 
+    @Mock
+    private ClienteRepository clienteRepositoryMock;
+
 
     @Test
     void salvarConta_ComSucesso() {
         Conta contaSalvar = this.criarConta();
         ContaPostDto contaPostDto = this.criarContaPostDto();
+        Cliente cliente = new Cliente(1l, "45", "nome", "tel", "end");
 
         when(contaRepositoryMock.save(any(Conta.class)))
                 .thenReturn(contaSalvar);
+        when(clienteRepositoryMock.findById(1l)).thenReturn(Optional.of(cliente));
 
-        Conta conta = contaService.salvar(contaPostDto);
-        Assertions.assertThat(conta).isNotNull();
+        Conta contaa = contaService.salvar(contaPostDto);
+        Assertions.assertThat(contaa).isNotNull();
     }
 
     @Test
@@ -111,6 +117,19 @@ class ContaServiceTest {
                 .hasMessageContaining("Preencha todos os campos");
     }
 
+    @Test
+    void salvarConta_SemIdCliente() {
+        Conta contaSalvar = this.criarConta();
+        ContaPostDto contaPostDto = this.criarContaPostDto();
+
+        when(contaRepositoryMock.save(any(Conta.class)))
+                .thenReturn(contaSalvar);
+
+        Assertions.assertThatThrownBy(() -> this.contaService.salvar(contaPostDto))
+                .isInstanceOf(ExecaoMensagem.class)
+                .hasMessageContaining("ID do cliente informado não existe");
+    }
+
 
     private Conta criarConta() {
         return Conta.builder()
@@ -143,7 +162,7 @@ class ContaServiceTest {
                 .build();
     }
 
-    private ContaPutDtoDesconto criarContaPutDtoDesconto(){
+    private ContaPutDtoDesconto criarContaPutDtoDesconto() {
         return ContaPutDtoDesconto.builder()
                 .id(1l)
                 .saldo(10)

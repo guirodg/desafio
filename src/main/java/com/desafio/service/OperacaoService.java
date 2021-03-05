@@ -32,6 +32,9 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite id da conta que deseja relizar operação");
         if (operacaoPostDto.getValor() <= 0)
             throw new ExecaoMensagem("Digite 'valor' para realizar deposito");
+        if (!operacaoPostDto.getTipoOperacao().equals("deposito"))
+            throw new ExecaoMensagem("Digite tipo de operacao: 'deposito'");
+
 
         Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
         if (!conta.isPresent())
@@ -50,6 +53,9 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite o valor do saque");
         if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta que deseja relizar operação");
+        if (!operacaoPostDto.getTipoOperacao().equals("saque"))
+            throw new ExecaoMensagem("Digite tipo de operacao: 'saque'");
+
 
         Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
         if (!conta.isPresent())
@@ -75,8 +81,11 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite o valor para a transferencia");
         if (operacaoPostDto.getContaOrigem().getId() <= 0)
             throw new ExecaoMensagem("Digite id da conta origem");
-        if (operacaoPostDto.getContaDestino().getId() <= 0)
-            throw new ExecaoMensagem("Digite id da conta destino");
+        if (!operacaoPostDto.getTipoOperacao().equals("transferencia"))
+            throw new ExecaoMensagem("Digite tipo de operacao: 'transferencia'");
+        if (!contaRepository.findById(operacaoPostDto.getContaDestino().getId()).isPresent())
+            throw new ExecaoMensagem("ID da conta informada não existe");
+
 
         Optional<Conta> contaOrigem = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
         if (!contaOrigem.isPresent())

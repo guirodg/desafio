@@ -51,7 +51,7 @@ class OperacaoServiceTest {
         Operacao operacaoSalvar = this.criarOperacao();
         Conta contaSalvar = this.criarConta();
 
-        OperacaoPostDto operacaoPostDtoSalvar = this.criarOperacaoPostDto();
+        OperacaoPostDto operacaoPostDtoSalvar = this.criarOperacaoPostDtoDeposito();
 
         when(operacaoRepositoryMock.save(any(Operacao.class)))
                 .thenReturn(operacaoSalvar);
@@ -65,7 +65,7 @@ class OperacaoServiceTest {
 
     @Test
     void salvarSaque_ComSucesso() {
-        Operacao operacaoSalvar = this.criarOperacao();
+        Operacao operacaoSalvar = this.criarOperacaoSaque();
         Conta contaSalvar = this.criarConta();
 
         OperacaoPostDto operacaoPostDtoSalvar = this.criarOperacaoPostDto();
@@ -85,7 +85,7 @@ class OperacaoServiceTest {
         Operacao operacaoSalvar = this.criarOperacao();
         Conta contaSalvar = this.criarConta();
 
-        OperacaoPostDto operacaoPostDtoSalvar = this.criarOperacaoPostDto();
+        OperacaoPostDto operacaoPostDtoSalvar = this.criarOperacaoPostDtoTransferencia();
 
         when(operacaoRepositoryMock.save(any(Operacao.class)))
                 .thenReturn(operacaoSalvar);
@@ -108,8 +108,8 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void salvarDeposito_SemTipoOperacao() {
-        OperacaoPostDto operacaoPostDtoSalvar = UtilOperacao.criarOperacaoPostDtoSemTipoOperacao();
+    void salvarDeposito_SemTipoOperacaoVazio() {
+        OperacaoPostDto operacaoPostDtoSalvar = UtilOperacao.criarOperacaoPostDtoSemTipoOperacaoVazio();
 
         Assertions.assertThatThrownBy(() -> this.operacaoService.salvarDeposito(operacaoPostDtoSalvar))
                 .isInstanceOf(ExecaoMensagem.class)
@@ -136,11 +136,20 @@ class OperacaoServiceTest {
 
     @Test
     void salvarDeposito_SemIdContaNoBanco() {
-        OperacaoPostDto operacaoPostDtoSalvar = UtilOperacao.criarOperacaoPostDtoSemIdNoBanco();
+        OperacaoPostDto operacaoPostDtoSalvar = UtilOperacao.criarOperacaoPostDtoSemIdNoBancoDeposito();
 
         Assertions.assertThatThrownBy(() -> this.operacaoService.salvarDeposito(operacaoPostDtoSalvar))
                 .isInstanceOf(ExecaoMensagem.class)
                 .hasMessageContaining("Id da contaOrigem não existe");
+    }
+
+    @Test
+    void salvarDeposito_SemTipoOperacaoDeposito() {
+        OperacaoPostDto operacaoPostDtoSalvar = UtilOperacao.criarOperacaoPostDtoSemOperacao();
+
+        Assertions.assertThatThrownBy(() -> this.operacaoService.salvarDeposito(operacaoPostDtoSalvar))
+                .isInstanceOf(ExecaoMensagem.class)
+                .hasMessageContaining("Digite tipo de operacao: 'deposito'");
     }
 
     // Validaçoes Post Saque
@@ -172,6 +181,15 @@ class OperacaoServiceTest {
                 .hasMessageContaining("Id da contaOrigem não existe");
     }
 
+    @Test
+    void salvarDeposito_SemTipoOperacaoSaque() {
+        OperacaoPostDto operacaoPostDtoSalvar = UtilOperacao.criarOperacaoPostDtoSemOperacao();
+
+        Assertions.assertThatThrownBy(() -> this.operacaoService.salvarSaque(operacaoPostDtoSalvar))
+                .isInstanceOf(ExecaoMensagem.class)
+                .hasMessageContaining("Digite tipo de operacao: 'saque'");
+    }
+
     // Validaçoes Post Transferencia
 
     @Test
@@ -193,19 +211,38 @@ class OperacaoServiceTest {
     }
 
     @Test
-    void salvarTransferencia_SemIdContaDestino() {
+    void salvarDeposito_SemTipoOperacaoTransferencia() {
         OperacaoPostDto operacaoPostDtoSalvar = UtilOperacao.criarOperacaoPostDtoSemIdDestino();
 
         Assertions.assertThatThrownBy(() -> this.operacaoService.salvarTransferencia(operacaoPostDtoSalvar))
                 .isInstanceOf(ExecaoMensagem.class)
-                .hasMessageContaining("Digite id da conta destino");
+                .hasMessageContaining("ID da conta informada não existe");
+    }
+
+    @Test
+    void salvarTransferencia_SemIdContaDestino() {
+        OperacaoPostDto operacaoPostDtoSalvar = UtilOperacao.criarOperacaoPostDtoSemOperacao();
+
+        Assertions.assertThatThrownBy(() -> this.operacaoService.salvarTransferencia(operacaoPostDtoSalvar))
+                .isInstanceOf(ExecaoMensagem.class)
+                .hasMessageContaining("Digite tipo de operacao: 'transferencia'");
+    }
+
+    private Operacao criarOperacaoSaque() {
+        return Operacao.builder()
+                .id(1l)
+                .valor(100)
+                .tipoOperacao("saque")
+                .contaOrigem(Conta.builder().id(1l).build())
+                .contaDestino(Conta.builder().id(1l).build())
+                .build();
     }
 
     private Operacao criarOperacao() {
         return Operacao.builder()
                 .id(1l)
                 .valor(100)
-                .tipoOperacao("Deposito")
+                .tipoOperacao("saque")
                 .contaOrigem(Conta.builder().id(1l).build())
                 .contaDestino(Conta.builder().id(1l).build())
                 .build();
@@ -225,7 +262,25 @@ class OperacaoServiceTest {
     private OperacaoPostDto criarOperacaoPostDto() {
         return OperacaoPostDto.builder()
                 .valor(1)
-                .tipoOperacao("Deposito")
+                .tipoOperacao("saque")
+                .contaOrigem(Conta.builder().id(1l).build())
+                .contaDestino(Conta.builder().id(1l).build())
+                .build();
+    }
+
+    private OperacaoPostDto criarOperacaoPostDtoDeposito() {
+        return OperacaoPostDto.builder()
+                .valor(1)
+                .tipoOperacao("deposito")
+                .contaOrigem(Conta.builder().id(1l).build())
+                .contaDestino(Conta.builder().id(1l).build())
+                .build();
+    }
+
+    private OperacaoPostDto criarOperacaoPostDtoTransferencia() {
+        return OperacaoPostDto.builder()
+                .valor(1)
+                .tipoOperacao("transferencia")
                 .contaOrigem(Conta.builder().id(1l).build())
                 .contaDestino(Conta.builder().id(1l).build())
                 .build();
