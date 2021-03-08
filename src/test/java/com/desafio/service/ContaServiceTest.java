@@ -9,6 +9,7 @@ import com.desafio.model.Conta;
 import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
 import com.desafio.util.UtilConta;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +36,7 @@ class ContaServiceTest {
 
 
     @Test
-    void salvarConta_ComSucesso() {
+    void salvarConta_ComSucesso() throws JsonProcessingException {
         Conta contaSalvar = this.criarConta();
         ContaPostDto contaPostDto = this.criarContaPostDto();
         Cliente cliente = new Cliente(1l, "45", "nome", "tel", "end");

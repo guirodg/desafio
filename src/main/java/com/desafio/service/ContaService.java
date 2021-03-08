@@ -9,8 +9,11 @@ import com.desafio.mapper.ContaMapper;
 import com.desafio.model.Conta;
 import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,8 +25,9 @@ import java.util.Optional;
 public class ContaService {
     private final ContaRepository contaRepository;
     private final ClienteRepository clienteRepository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public Conta salvar(ContaPostDto contaPostDto) {
+    public Conta salvar(ContaPostDto contaPostDto) throws JsonProcessingException {
         if (contaPostDto.getNumeroConta() <= 0 ||
                 contaPostDto.getDigitoVerificador() <= 0 ||
                 contaPostDto.getTipoConta().isEmpty() ||
@@ -48,7 +52,11 @@ public class ContaService {
 
         ControleContaExterno controleContaExterno = ControleContaExterno.builder().idConta(contaSalva.getId()).
                 limeteSaque(limeteSaque).tipoConta(conta.getTipoConta()).build();
+
         new RestTemplate().postForEntity("http://localhost:8081/controle", controleContaExterno, Conta.class);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String jsonControleConta = objectMapper.writeValueAsString(controleContaExterno);
+//        kafkaTemplate.send("TOPIC_BANCO",jsonControleConta);
 
         return contaSalva;
     }

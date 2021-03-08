@@ -5,6 +5,7 @@ import com.desafio.dto.reqconta.ContaPostDto;
 import com.desafio.dto.reqconta.ContaPutDto;
 import com.desafio.model.Conta;
 import com.desafio.service.ContaService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class ContaController {
     }
 
     @PostMapping
-    public ResponseEntity<Conta> salvar(@RequestBody ContaPostDto contaPostDto) {
+    public ResponseEntity<Conta> salvar(@RequestBody ContaPostDto contaPostDto) throws JsonProcessingException {
         return new ResponseEntity<>(contaService.salvar(contaPostDto), HttpStatus.CREATED);
     }
 
