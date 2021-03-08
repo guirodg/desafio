@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -53,17 +52,16 @@ public class ContaService {
         ControleContaExterno controleContaExterno = ControleContaExterno.builder().idConta(contaSalva.getId()).
                 limeteSaque(limeteSaque).tipoConta(conta.getTipoConta()).build();
 
-        new RestTemplate().postForEntity("http://localhost:8081/controle", controleContaExterno, Conta.class);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String jsonControleConta = objectMapper.writeValueAsString(controleContaExterno);
-//        kafkaTemplate.send("TOPIC_BANCO",jsonControleConta);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonControleConta = objectMapper.writeValueAsString(controleContaExterno);
+        kafkaTemplate.send("TOPIC_BANCO", jsonControleConta);
 
         return contaSalva;
     }
 
     public Conta atualizar(ContaPutDto contaPutDto) {
         if (contaPutDto.getNumeroConta() <= 0 ||
-                contaPutDto.getDigitoVerificador() <=0 ||
+                contaPutDto.getDigitoVerificador() <= 0 ||
                 contaPutDto.getTipoConta().isEmpty() ||
                 contaPutDto.getCliente().getId() <= 0) {
             throw new ExecaoMensagem("Preencha todos os campos");
