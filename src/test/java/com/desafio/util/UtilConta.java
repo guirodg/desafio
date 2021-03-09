@@ -2,7 +2,6 @@ package com.desafio.util;
 
 import com.desafio.dto.reqconta.ContaPostDto;
 import com.desafio.dto.reqconta.ContaPutDto;
-import com.desafio.dto.reqconta.ContaPutDtoDesconto;
 import com.desafio.model.Cliente;
 
 public class UtilConta {
