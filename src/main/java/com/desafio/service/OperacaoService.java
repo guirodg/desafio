@@ -84,7 +84,7 @@ public class OperacaoService {
         if (!operacaoPostDto.getTipoOperacao().equals("transferencia"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'transferencia'");
         if (!contaRepository.findById(operacaoPostDto.getContaDestino().getId()).isPresent())
-            throw new ExecaoMensagem("ID da conta informada não existe");
+            throw new ExecaoMensagem("ID da contaDestino informada não existe");
 
 
         Optional<Conta> contaOrigem = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
