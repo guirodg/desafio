@@ -66,6 +66,8 @@ public class ContaService {
                 contaPutDto.getCliente().getId() <= 0) {
             throw new ExecaoMensagem("Preencha todos os campos");
         }
+        if (!clienteRepository.findById(contaPutDto.getCliente().getId()).isPresent())
+            throw new ExecaoMensagem("ID do cliente informada não existe");
         Conta contaSalva = encontreIdOuErro(contaPutDto.getId());
         Conta conta = ContaMapper.INSTANCE.toConta(contaPutDto);
         conta.setId(contaSalva.getId());

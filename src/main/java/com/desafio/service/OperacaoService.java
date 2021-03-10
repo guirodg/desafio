@@ -100,6 +100,9 @@ public class OperacaoService {
                 throw new ExecaoMensagem("Id da contaDestino não existe");
             contaDestino.get().setSaldo(contaDestino.get().getSaldo() + operacaoPostDto.getValor());
             contaRepository.save(contaDestino.get());
+
+            if (contaOrigem.get().getId().equals(contaDestino.get().getId()))
+                throw new ExecaoMensagem("Não pode realizar transferência para própria conta!");
         }
 
         Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
