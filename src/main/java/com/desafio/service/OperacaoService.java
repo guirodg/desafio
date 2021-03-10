@@ -86,7 +86,6 @@ public class OperacaoService {
         if (!contaRepository.findById(operacaoPostDto.getContaDestino().getId()).isPresent())
             throw new ExecaoMensagem("ID da contaDestino informada não existe");
 
-
         Optional<Conta> contaOrigem = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
         if (!contaOrigem.isPresent())
             throw new ExecaoMensagem("Id da contaOrigem não existe");
@@ -94,14 +93,15 @@ public class OperacaoService {
             throw new ExecaoMensagem("Saldo insuficiente da conta origem");
         if (contaOrigem.get().getSaldo() >= operacaoPostDto.getValor()) {
             contaOrigem.get().setSaldo(contaOrigem.get().getSaldo() - operacaoPostDto.getValor());
+            contaRepository.save(contaOrigem.get());
 
-            Optional<Conta> contaDestino = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
+            Optional<Conta> contaDestino = contaRepository.findById(operacaoPostDto.getContaDestino().getId());
             if (!contaDestino.isPresent())
                 throw new ExecaoMensagem("Id da contaDestino não existe");
             contaDestino.get().setSaldo(contaDestino.get().getSaldo() + operacaoPostDto.getValor());
             contaRepository.save(contaDestino.get());
-            contaRepository.save(contaOrigem.get());
         }
+
         Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
         operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
         operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
