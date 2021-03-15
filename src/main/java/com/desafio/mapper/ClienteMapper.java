@@ -1,7 +1,9 @@
 package com.desafio.mapper;
 
-import com.desafio.dto.clienterequest.ClienteRequest;
-import com.desafio.dto.clienteresponse.ClienteResponse;
+import com.desafio.dto.clienterequest.ClienteRequestPost;
+import com.desafio.dto.clienterequest.ClienteRequestPut;
+import com.desafio.dto.clienteresponse.ClienteResponsePost;
+import com.desafio.dto.clienteresponse.ClienteResponsePut;
 import com.desafio.model.Cliente;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -10,8 +12,12 @@ import org.mapstruct.factory.Mappers;
 public abstract class ClienteMapper {
     public static final ClienteMapper INSTANCE = Mappers.getMapper(ClienteMapper.class);
 
-    public abstract Cliente toModel(ClienteRequest clienteRequest);
+    public abstract Cliente toModelPost(ClienteRequestPost clienteRequestPost);
 
-    public abstract ClienteResponse toDto(Cliente cliente);
+    public abstract Cliente toModelPut(ClienteRequestPut clienteRequestPut);
+
+    public abstract ClienteResponsePost toDtoPost(Cliente cliente);
+
+    public abstract ClienteResponsePut toDtoPut(Cliente cliente);
 
 }

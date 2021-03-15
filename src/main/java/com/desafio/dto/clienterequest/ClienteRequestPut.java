@@ -5,10 +5,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ClienteRequest {
+public class ClienteRequestPut {
     private Long id;
     private String nome;
-    private String cpf;
     private String telefone;
     private String endereco;
 }

@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClienteResponse {
+public class ClienteResponsePost {
     private Long id;
     private String nome;
     private String cpf;
     private String telefone;
     private String endereco;
-    private String menssagem;
+    private String status;
 }
