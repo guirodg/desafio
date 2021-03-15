@@ -9,6 +9,7 @@ import com.desafio.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,9 +30,9 @@ public class ClienteService {
         if (clienteRepository.findByCpf(clienteRequest.getCpf()) != null)
             throw new ExecaoMensagem("CPF já existe");
 
-        Cliente cliente = ClienteMapper.INSTANCE.toCliente(clienteRequest);
+        Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
-        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toModel(cliente);
+        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDto(cliente);
         clienteResponse.setMenssagem("Cliente cadastrado com sucesso!");
         return clienteResponse;
     }
@@ -47,9 +48,9 @@ public class ClienteService {
         if (clienteRequest.getCpf().isEmpty())
             throw new ExecaoMensagem("Preencha o campo cpf!");
 
-        Cliente cliente = ClienteMapper.INSTANCE.toCliente(clienteRequest);
+        Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
-        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toModel(cliente);
+        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDto(cliente);
         clienteResponse.setMenssagem("Cliente atualizado com sucesso!");
         return clienteResponse;
     }
@@ -63,7 +64,15 @@ public class ClienteService {
                 .orElseThrow(() -> new ExecaoMensagem("ID não existe"));
     }
 
-    public List<Cliente> listaCliente(){
-        return clienteRepository.findAll();
+    public List<ClienteResponse> listaCliente() {
+        List<ClienteResponse> clienteResponses = new ArrayList<>();
+        List<Cliente> clientes = clienteRepository.findAll();
+        for (Cliente cliente : clientes) {
+            Cliente clienteSalvo = clienteRepository.save(cliente);
+            ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDto(clienteSalvo);
+            clienteResponse.setMenssagem("Ok");
+            clienteResponses.add(clienteResponse);
+        }
+        return clienteResponses;
     }
 }
