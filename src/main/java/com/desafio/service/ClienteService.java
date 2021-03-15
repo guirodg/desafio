@@ -1,7 +1,7 @@
 package com.desafio.service;
 
-import com.desafio.dto.reqcliente.ClientePostDto;
-import com.desafio.dto.reqcliente.ClientePutDto;
+import com.desafio.dto.clienterequest.ClienteRequest;
+import com.desafio.dto.clienteresponse.ClienteResponse;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.mapper.ClienteMapper;
 import com.desafio.model.Cliente;
@@ -9,45 +9,61 @@ import com.desafio.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
     private final ClienteRepository clienteRepository;
 
-    public Cliente salvar(ClientePostDto clientePostDto) {
-        if (clientePostDto.getNome().isEmpty() ||
-                clientePostDto.getEndereco().isEmpty() ||
-                clientePostDto.getTelefone().isEmpty() ||
-                clientePostDto.getCpf().isEmpty()) {
-            throw new ExecaoMensagem("Todos os campos não foram preenchidos");
-        }
-        if (clienteRepository.findByCpf(clientePostDto.getCpf()) != null)
+    public ClienteResponse salvar(ClienteRequest clienteRequest) {
+        if (clienteRequest.getNome().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo nome!");
+        if (clienteRequest.getEndereco().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo endereço!");
+        if (clienteRequest.getTelefone().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo telefone!");
+        if (clienteRequest.getCpf().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo cpf!");
+
+        if (clienteRepository.findByCpf(clienteRequest.getCpf()) != null)
             throw new ExecaoMensagem("CPF já existe");
 
-        Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePostDto);
-        return clienteRepository.save(cliente);
+        Cliente cliente = ClienteMapper.INSTANCE.toCliente(clienteRequest);
+        clienteRepository.save(cliente);
+        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toModel(cliente);
+        clienteResponse.setMenssagem("Cliente cadastrado com sucesso!");
+        return clienteResponse;
     }
 
-    public Cliente atualizar(ClientePutDto clientePutDto) {
-        if (clientePutDto.getNome().isEmpty() ||
-                clientePutDto.getEndereco().isEmpty() ||
-                clientePutDto.getTelefone().isEmpty() || clientePutDto.getCpf().isEmpty()) {
-            throw new ExecaoMensagem("Todos os campos não foram preenchidos");
-        }
-        Cliente clienteSalvo = encontreIdOuErro(clientePutDto.getId());
-        Cliente cliente = ClienteMapper.INSTANCE.toCliente(clientePutDto);
-        cliente.setId(clienteSalvo.getId());
+    public ClienteResponse atualizar(ClienteRequest clienteRequest) {
+        clienteRequest.setId(encontreIdOuErro(clienteRequest.getId()).getId());
+        if (clienteRequest.getNome().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo nome!");
+        if (clienteRequest.getEndereco().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo endereço!");
+        if (clienteRequest.getTelefone().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo telefone!");
+        if (clienteRequest.getCpf().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo cpf!");
 
-        return clienteRepository.save(cliente);
+        Cliente cliente = ClienteMapper.INSTANCE.toCliente(clienteRequest);
+        clienteRepository.save(cliente);
+        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toModel(cliente);
+        clienteResponse.setMenssagem("Cliente atualizado com sucesso!");
+        return clienteResponse;
     }
 
     public void deletar(Long id) {
         clienteRepository.delete(encontreIdOuErro(id));
     }
 
-
     public Cliente encontreIdOuErro(Long id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ExecaoMensagem("ID não existe"));
+    }
+
+    public List<Cliente> listaCliente(){
+        return clienteRepository.findAll();
     }
 }

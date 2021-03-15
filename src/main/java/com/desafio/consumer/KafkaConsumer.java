@@ -1,6 +1,6 @@
 package com.desafio.consumer;
 
-import com.desafio.dto.reqconta.ContaPutDtoDesconto;
+import com.desafio.dto.contarequest.ContaPutDtoDesconto;
 import com.desafio.service.ContaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

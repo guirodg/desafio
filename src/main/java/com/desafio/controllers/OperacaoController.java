@@ -1,6 +1,6 @@
 package com.desafio.controllers;
 
-import com.desafio.dto.reqoperacao.OperacaoPostDto;
+import com.desafio.dto.operacaorequest.OperacaoPostDto;
 import com.desafio.model.Operacao;
 import com.desafio.service.OperacaoService;
 import lombok.RequiredArgsConstructor;

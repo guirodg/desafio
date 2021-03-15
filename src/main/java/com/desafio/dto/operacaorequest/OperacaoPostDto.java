@@ -1,4 +1,4 @@
-package com.desafio.dto.reqoperacao;
+package com.desafio.dto.operacaorequest;
 
 import com.desafio.model.Conta;
 import lombok.Builder;

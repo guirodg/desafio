@@ -1,6 +1,6 @@
 package com.desafio.mapper;
 
-import com.desafio.dto.reqoperacao.OperacaoPostDto;
+import com.desafio.dto.operacaorequest.OperacaoPostDto;
 import com.desafio.model.Operacao;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

@@ -1,8 +1,8 @@
 package com.desafio.controllers;
 
-import com.desafio.dto.reqconta.ContaPutDtoDesconto;
-import com.desafio.dto.reqconta.ContaPostDto;
-import com.desafio.dto.reqconta.ContaPutDto;
+import com.desafio.dto.contarequest.ContaPutDtoDesconto;
+import com.desafio.dto.contarequest.ContaPostDto;
+import com.desafio.dto.contarequest.ContaPutDto;
 import com.desafio.model.Conta;
 import com.desafio.service.ContaService;
 import com.fasterxml.jackson.core.JsonProcessingException;

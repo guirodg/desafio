@@ -14,10 +14,10 @@ public class ErroController {
         return new ResponseEntity<>(
                 ExecaoAtributos.builder()
                         .timestamp(LocalDateTime.now())
-                        .status(400)
+                        .status(422)
                         .titulo("Bad Request")
                         .message(e.getMessage())
-                        .build(), HttpStatus.BAD_REQUEST);
+                        .build(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 }

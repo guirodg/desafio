@@ -1,4 +1,4 @@
-package com.desafio.dto.reqconta;
+package com.desafio.dto.contarequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

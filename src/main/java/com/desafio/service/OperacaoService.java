@@ -1,6 +1,6 @@
 package com.desafio.service;
 
-import com.desafio.dto.reqoperacao.OperacaoPostDto;
+import com.desafio.dto.operacaorequest.OperacaoPostDto;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.externo.ControleContaExterno;
 import com.desafio.mapper.OperacaoMapper;
