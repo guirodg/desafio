@@ -1,9 +1,7 @@
 package com.desafio.controllers;
 
-import com.desafio.dto.clienterequest.ClienteRequestPost;
-import com.desafio.dto.clienterequest.ClienteRequestPut;
-import com.desafio.dto.clienteresponse.ClienteResponsePost;
-import com.desafio.dto.clienteresponse.ClienteResponsePut;
+import com.desafio.dto.clienterequest.ClienteRequest;
+import com.desafio.dto.clienteresponse.ClienteResponse;
 import com.desafio.service.ClienteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,23 +17,23 @@ public class ClienteController {
     private final ClienteService clienteService;
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<ClienteResponsePost> listarPorId(@PathVariable Long id) {
+    public ResponseEntity<ClienteResponse> listarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(clienteService.buscaIdCliente(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<ClienteResponsePost>> listar() {
+    public ResponseEntity<List<ClienteResponse>> listar() {
         return ResponseEntity.ok(clienteService.listaCliente());
     }
 
     @PostMapping
-    public ResponseEntity<ClienteResponsePost> salvar(@RequestBody ClienteRequestPost clienteRequestPost) {
-        return new ResponseEntity<>(clienteService.salvar(clienteRequestPost), HttpStatus.CREATED);
+    public ResponseEntity<ClienteResponse> salvar(@RequestBody ClienteRequest clienteRequest) {
+        return new ResponseEntity<>(clienteService.salvar(clienteRequest), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<ClienteResponsePut> atualizar(@RequestBody ClienteRequestPut clienteRequestPut) {
-        return new ResponseEntity<>(clienteService.atualizar(clienteRequestPut), HttpStatus.OK);
+    public ResponseEntity<ClienteResponse> atualizar(@RequestBody ClienteRequest clienteRequest) {
+        return new ResponseEntity<>(clienteService.atualizar(clienteRequest), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")

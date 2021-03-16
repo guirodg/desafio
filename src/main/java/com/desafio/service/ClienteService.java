@@ -1,9 +1,7 @@
 package com.desafio.service;
 
-import com.desafio.dto.clienterequest.ClienteRequestPost;
-import com.desafio.dto.clienterequest.ClienteRequestPut;
-import com.desafio.dto.clienteresponse.ClienteResponsePost;
-import com.desafio.dto.clienteresponse.ClienteResponsePut;
+import com.desafio.dto.clienterequest.ClienteRequest;
+import com.desafio.dto.clienteresponse.ClienteResponse;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.mapper.ClienteMapper;
 import com.desafio.model.Cliente;
@@ -20,61 +18,65 @@ import java.util.Optional;
 public class ClienteService {
     private final ClienteRepository clienteRepository;
 
-    public ClienteResponsePost buscaIdCliente(Long id) {
+    public ClienteResponse buscaIdCliente(Long id) {
         Optional<Cliente> clienteSalvo = Optional.ofNullable(clienteRepository.findById(id).orElseThrow(() ->
                 new ExecaoMensagem("ID nao exite")));
 
-        ClienteResponsePost clienteResponsePost = ClienteMapper.INSTANCE.toDtoPost(clienteSalvo.get());
-        clienteResponsePost.setStatus("Cliente obtido com sucesso!");
-        return clienteResponsePost;
+        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(clienteSalvo.get());
+        clienteResponse.setStatus("Cliente obtido com sucesso!");
+        return clienteResponse;
     }
 
-    public List<ClienteResponsePost> listaCliente() {
-        List<ClienteResponsePost> clienteResponsPosts = new ArrayList<>();
+    public List<ClienteResponse> listaCliente() {
+        List<ClienteResponse> clienteResponsPosts = new ArrayList<>();
         List<Cliente> clientes = clienteRepository.findAll();
         for (Cliente cliente : clientes) {
             Cliente clienteSalvo = clienteRepository.save(cliente);
-            ClienteResponsePost clienteResponsePost = ClienteMapper.INSTANCE.toDtoPost(clienteSalvo);
-            clienteResponsePost.setStatus("Sucesso!");
-            clienteResponsPosts.add(clienteResponsePost);
+            ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(clienteSalvo);
+            clienteResponse.setStatus("Sucesso!");
+            clienteResponsPosts.add(clienteResponse);
         }
         return clienteResponsPosts;
     }
 
-    public ClienteResponsePost salvar(ClienteRequestPost clienteRequestPost) {
-        if (clienteRequestPost.getNome().isEmpty())
+    public ClienteResponse salvar(ClienteRequest clienteRequest) {
+        if (clienteRequest.getNome().isEmpty())
             throw new ExecaoMensagem("Preencha o campo nome!");
-        if (clienteRequestPost.getEndereco().isEmpty())
+        if (clienteRequest.getEndereco().isEmpty())
             throw new ExecaoMensagem("Preencha o campo endereço!");
-        if (clienteRequestPost.getTelefone().isEmpty())
+        if (clienteRequest.getTelefone().isEmpty())
             throw new ExecaoMensagem("Preencha o campo telefone!");
-        if (clienteRequestPost.getCpf().isEmpty())
+        if (clienteRequest.getCpf().isEmpty())
             throw new ExecaoMensagem("Preencha o campo cpf!");
 
-        if (clienteRepository.findByCpf(clienteRequestPost.getCpf()) != null)
+        if (clienteRepository.findByCpf(clienteRequest.getCpf()) != null)
             throw new ExecaoMensagem("CPF já existe");
 
-        Cliente cliente = ClienteMapper.INSTANCE.toModelPost(clienteRequestPost);
+        Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
-        ClienteResponsePost clienteResponsePost = ClienteMapper.INSTANCE.toDtoPost(cliente);
-        clienteResponsePost.setStatus("Cliente cadastrado com sucesso!");
-        return clienteResponsePost;
+        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
+        clienteResponse.setStatus("Cliente cadastrado com sucesso!");
+        return clienteResponse;
     }
 
-    public ClienteResponsePut atualizar(ClienteRequestPut clienteRequestPut) {
-        clienteRequestPut.setId(encontreIdOuErro(clienteRequestPut.getId()).getId());
-        if (clienteRequestPut.getNome().isEmpty())
+    public ClienteResponse atualizar(ClienteRequest clienteRequest) {
+        clienteRequest.setId(encontreIdOuErro(clienteRequest.getId()).getId());
+        if (clienteRequest.getNome().isEmpty())
             throw new ExecaoMensagem("Preencha o campo nome!");
-        if (clienteRequestPut.getEndereco().isEmpty())
+        if (clienteRequest.getEndereco().isEmpty())
             throw new ExecaoMensagem("Preencha o campo endereço!");
-        if (clienteRequestPut.getTelefone().isEmpty())
+        if (clienteRequest.getTelefone().isEmpty())
             throw new ExecaoMensagem("Preencha o campo telefone!");
+        if (clienteRequest.getCpf().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo cpf!");
+        if (clienteRepository.findByCpf(clienteRequest.getCpf()) != null)
+            throw new ExecaoMensagem("Preencha um cpf válido");
 
-        Cliente cliente = ClienteMapper.INSTANCE.toModelPut(clienteRequestPut);
+        Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
-        ClienteResponsePut clienteResponsePut = ClienteMapper.INSTANCE.toDtoPut(cliente);
-        clienteResponsePut.setStatus("Cliente atualizado com sucesso!");
-        return clienteResponsePut;
+        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
+        clienteResponse.setStatus("Cliente atualizado com sucesso!");
+        return clienteResponse;
     }
 
     public void deletar(Long id) {
