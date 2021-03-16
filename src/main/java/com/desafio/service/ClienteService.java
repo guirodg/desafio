@@ -6,6 +6,7 @@ import com.desafio.erros.ExecaoMensagem;
 import com.desafio.mapper.ClienteMapper;
 import com.desafio.model.Cliente;
 import com.desafio.repository.ClienteRepository;
+import com.desafio.util.Validador;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClienteService {
     private final ClienteRepository clienteRepository;
+    private final Validador validador;
 
     public ClienteResponse buscaIdCliente(Long id) {
         Optional<Cliente> clienteSalvo = Optional.ofNullable(clienteRepository.findById(id).orElseThrow(() ->
@@ -46,11 +48,13 @@ public class ClienteService {
             throw new ExecaoMensagem("Preencha o campo endereço!");
         if (clienteRequest.getTelefone().isEmpty())
             throw new ExecaoMensagem("Preencha o campo telefone!");
-        if (clienteRequest.getCpf().isEmpty())
+        if (clienteRequest.getCpfCnpj().isEmpty())
             throw new ExecaoMensagem("Preencha o campo cpf!");
 
-        if (clienteRepository.findByCpf(clienteRequest.getCpf()) != null)
+        if (clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj()) != null)
             throw new ExecaoMensagem("CPF já existe");
+
+        validador.validaCpf(clienteRequest.getCpfCnpj());
 
         Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
@@ -61,16 +65,18 @@ public class ClienteService {
 
     public ClienteResponse atualizar(ClienteRequest clienteRequest) {
         clienteRequest.setId(encontreIdOuErro(clienteRequest.getId()).getId());
-        if (clienteRequest.getNome().isEmpty())
+        if (clienteRequest.getNome().isEmpty() || clienteRequest.getNome().equals(null))
             throw new ExecaoMensagem("Preencha o campo nome!");
         if (clienteRequest.getEndereco().isEmpty())
             throw new ExecaoMensagem("Preencha o campo endereço!");
         if (clienteRequest.getTelefone().isEmpty())
             throw new ExecaoMensagem("Preencha o campo telefone!");
-        if (clienteRequest.getCpf().isEmpty())
+        if (clienteRequest.getCpfCnpj().isEmpty())
             throw new ExecaoMensagem("Preencha o campo cpf!");
-        if (clienteRepository.findByCpf(clienteRequest.getCpf()) != null)
+        if (clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj()) != null)
             throw new ExecaoMensagem("Preencha um cpf válido");
+
+        validador.validaCpf(clienteRequest.getCpfCnpj());
 
         Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);

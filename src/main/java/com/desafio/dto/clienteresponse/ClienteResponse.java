@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ClienteResponse {
     private Long id;
     private String nome;
-    private String cpf;
+    private String cpfCnpj;
     private String telefone;
     private String endereco;
     private String status;
