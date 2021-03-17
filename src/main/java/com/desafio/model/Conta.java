@@ -18,11 +18,10 @@ public class Conta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private int numeroConta;
     private String tipoConta;
     private int digitoVerificador;
     private double saldo;
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Cliente cliente;
+    private String cpfCliente;
 }

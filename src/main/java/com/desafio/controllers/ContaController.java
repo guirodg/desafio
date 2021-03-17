@@ -1,8 +1,9 @@
 package com.desafio.controllers;
 
 import com.desafio.dto.contarequest.ContaPutDtoDesconto;
-import com.desafio.dto.contarequest.ContaPostDto;
+import com.desafio.dto.contarequest.ContaRequest;
 import com.desafio.dto.contarequest.ContaPutDto;
+import com.desafio.dto.contaresponse.ContaResponse;
 import com.desafio.model.Conta;
 import com.desafio.service.ContaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("contas")
@@ -23,8 +26,8 @@ public class ContaController {
     }
 
     @PostMapping
-    public ResponseEntity<Conta> salvar(@RequestBody ContaPostDto contaPostDto) throws JsonProcessingException {
-        return new ResponseEntity<>(contaService.salvar(contaPostDto), HttpStatus.CREATED);
+    public ResponseEntity<ContaResponse> salvar(@Valid @RequestBody ContaRequest contaRequest) throws JsonProcessingException {
+        return new ResponseEntity<>(contaService.salvar(contaRequest), HttpStatus.CREATED);
     }
 
     @PutMapping

@@ -1,8 +1,9 @@
 package com.desafio.service;
 
-import com.desafio.dto.contarequest.ContaPostDto;
 import com.desafio.dto.contarequest.ContaPutDto;
 import com.desafio.dto.contarequest.ContaPutDtoDesconto;
+import com.desafio.dto.contarequest.ContaRequest;
+import com.desafio.dto.contaresponse.ContaResponse;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.externo.ControleContaExterno;
 import com.desafio.mapper.ContaMapper;
@@ -17,6 +18,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -26,27 +28,28 @@ public class ContaService {
     private final ClienteRepository clienteRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public Conta salvar(ContaPostDto contaPostDto) throws JsonProcessingException {
-        if (contaPostDto.getNumeroConta() <= 0 ||
-                contaPostDto.getDigitoVerificador() <= 0 ||
-                contaPostDto.getTipoConta().isEmpty() ||
-                contaPostDto.getCliente().getId() <= 0) {
-            throw new ExecaoMensagem("Preencha todos os campos");
-        }
-        if (!clienteRepository.findById(contaPostDto.getCliente().getId()).isPresent())
-            throw new ExecaoMensagem("ID do cliente informado não existe");
-
-        Conta conta = ContaMapper.INSTANCE.toConta(contaPostDto);
-        conta.setSaldo(0);
+    public ContaResponse salvar(ContaRequest contaRequest) throws JsonProcessingException {
+        if (contaRequest.getNumeroConta() <= 0)
+            throw new ExecaoMensagem("Preencha o campo numero conta");
+        if (contaRequest.getTipoConta().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo tipo conta");
+        if (!(clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) != null))
+            throw new ExecaoMensagem("CPF Informado não existe");
+        if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
+            throw new ExecaoMensagem("Numero de conta ja existe");
 
         int limeteSaque = 5;
-        if (contaPostDto.getTipoConta().equals("pessoa fisica"))
+        if (contaRequest.getTipoConta().equals("pessoa fisica"))
             limeteSaque = 5;
-        if (contaPostDto.getTipoConta().equals("pessoa juridica"))
+        if (contaRequest.getTipoConta().equals("pessoa juridica"))
             limeteSaque = 50;
-        if (contaPostDto.getTipoConta().equals("governamental"))
+        if (contaRequest.getTipoConta().equals("governamental"))
             limeteSaque = 250;
 
+        Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
+        conta.setSaldo(0);
+        conta.setCpfCliente(contaRequest.getCpfCliente());
+        conta.setDigitoVerificador(new Random().nextInt(10));
         Conta contaSalva = contaRepository.save(conta);
 
         ControleContaExterno controleContaExterno = ControleContaExterno.builder().idConta(contaSalva.getId()).
@@ -56,7 +59,11 @@ public class ContaService {
         String jsonControleConta = objectMapper.writeValueAsString(controleContaExterno);
         kafkaTemplate.send("TOPIC_BANCO", jsonControleConta);
 
-        return contaSalva;
+        ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
+        contaResponse.setCpfCliente(contaRequest.getCpfCliente());
+        contaResponse.setDigitoVerificador(conta.getDigitoVerificador());
+        contaResponse.setStatus("Conta cadastrada com Sucesso");
+        return contaResponse;
     }
 
     public Conta atualizar(ContaPutDto contaPutDto) {
@@ -69,7 +76,7 @@ public class ContaService {
         if (!clienteRepository.findById(contaPutDto.getCliente().getId()).isPresent())
             throw new ExecaoMensagem("ID do cliente informada não existe");
         Conta contaSalva = encontreIdOuErro(contaPutDto.getId());
-        Conta conta = ContaMapper.INSTANCE.toConta(contaPutDto);
+        Conta conta = ContaMapper.INSTANCE.toModel(contaPutDto);
         conta.setId(contaSalva.getId());
         return contaRepository.save(conta);
     }
@@ -80,7 +87,7 @@ public class ContaService {
         if (contaPutDtoDesconto.getSaldo() <= 0)
             throw new ExecaoMensagem("Digite o valor a ser descontado");
 
-        Conta conta = ContaMapper.INSTANCE.toConta(contaPutDtoDesconto);
+        Conta conta = ContaMapper.INSTANCE.toModel(contaPutDtoDesconto);
         conta.setId(contaSalva.getId());
         contaId.get().setSaldo(contaId.get().getSaldo() - contaPutDtoDesconto.getSaldo());
         contaRepository.save(contaId.get());
