@@ -1,7 +1,7 @@
 package com.desafio.service;
 
-import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.dto.contarequest.ContaRequest;
+import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.dto.contaresponse.ContaResponse;
 import com.desafio.dto.contaresponse.ContaResponseDesconto;
 import com.desafio.erros.ExecaoMensagem;
@@ -17,8 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,26 @@ public class ContaService {
     private final ContaRepository contaRepository;
     private final ClienteRepository clienteRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
+
+    public ContaResponse buscaIdConta(Long contaId) {
+        Optional<Conta> conta = Optional.ofNullable(contaRepository.findById(contaId).orElseThrow(() ->
+                new ExecaoMensagem("ID não existe")));
+        ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta.get());
+        contaResponse.setStatus("Busca com sucesso!");
+        return contaResponse;
+    }
+
+    public List<ContaResponse> listaConta() {
+        List<ContaResponse> contaResponses = new ArrayList<>();
+        List<Conta> contas = contaRepository.findAll();
+        for (Conta conta : contas) {
+            Conta contaSalva = contaRepository.save(conta);
+            ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(contaSalva);
+            contaResponse.setStatus("Sucesso!");
+            contaResponses.add(contaResponse);
+        }
+        return contaResponses;
+    }
 
     public ContaResponse salvar(ContaRequest contaRequest) throws JsonProcessingException {
         if (contaRequest.getTipoConta().isEmpty())

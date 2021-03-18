@@ -1,10 +1,9 @@
 package com.desafio.controllers;
 
-import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.dto.contarequest.ContaRequest;
+import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.dto.contaresponse.ContaResponse;
 import com.desafio.dto.contaresponse.ContaResponseDesconto;
-import com.desafio.model.Conta;
 import com.desafio.service.ContaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import javax.validation.Valid;
 
 @RestController
@@ -20,9 +20,14 @@ import javax.validation.Valid;
 public class ContaController {
     private final ContaService contaService;
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<Conta> listarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(contaService.encontreIdOuErro(id));
+    @GetMapping(value = "busca")
+    public ResponseEntity<ContaResponse> listarPorId(@RequestParam Long contaId) {
+        return ResponseEntity.ok(contaService.buscaIdConta(contaId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ContaResponse>> listar() {
+        return ResponseEntity.ok(contaService.listaConta());
     }
 
     @PostMapping
