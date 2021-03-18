@@ -20,8 +20,8 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final Validador validador;
 
-    public ClienteResponse buscaIdCliente(Long cliente) {
-        Optional<Cliente> clienteSalvo = Optional.ofNullable(clienteRepository.findById(cliente).orElseThrow(() ->
+    public ClienteResponse buscaIdCliente(Long clienteId) {
+        Optional<Cliente> clienteSalvo = Optional.ofNullable(clienteRepository.findById(clienteId).orElseThrow(() ->
                 new ExecaoMensagem("ID nao exite")));
 
         ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(clienteSalvo.get());
@@ -30,15 +30,15 @@ public class ClienteService {
     }
 
     public List<ClienteResponse> listaCliente() {
-        List<ClienteResponse> clienteResponsPosts = new ArrayList<>();
+        List<ClienteResponse> clienteResponses = new ArrayList<>();
         List<Cliente> clientes = clienteRepository.findAll();
         for (Cliente cliente : clientes) {
             Cliente clienteSalvo = clienteRepository.save(cliente);
             ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(clienteSalvo);
             clienteResponse.setStatus("Sucesso!");
-            clienteResponsPosts.add(clienteResponse);
+            clienteResponses.add(clienteResponse);
         }
-        return clienteResponsPosts;
+        return clienteResponses;
     }
 
     public ClienteResponse salvar(ClienteRequest clienteRequest) {

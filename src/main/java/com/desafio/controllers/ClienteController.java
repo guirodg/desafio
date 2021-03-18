@@ -18,8 +18,8 @@ public class ClienteController {
     private final ClienteService clienteService;
 
     @GetMapping(value = "busca")
-    public ResponseEntity<ClienteResponse> listarPorId(@RequestParam Long cliente) {
-        return ResponseEntity.ok(clienteService.buscaIdCliente(cliente));
+    public ResponseEntity<ClienteResponse> listarPorId(@RequestParam Long clienteId) {
+        return ResponseEntity.ok(clienteService.buscaIdCliente(clienteId));
     }
 
     @GetMapping
