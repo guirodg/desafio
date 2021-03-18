@@ -1,8 +1,9 @@
 package com.desafio.service;
 
-import com.desafio.dto.contarequest.ContaPutDtoDesconto;
+import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.dto.contarequest.ContaRequest;
 import com.desafio.dto.contaresponse.ContaResponse;
+import com.desafio.dto.contaresponse.ContaResponseDesconto;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.externo.ControleContaExterno;
 import com.desafio.mapper.ContaMapper;
@@ -30,7 +31,7 @@ public class ContaService {
     public ContaResponse salvar(ContaRequest contaRequest) throws JsonProcessingException {
         if (contaRequest.getTipoConta().isEmpty())
             throw new ExecaoMensagem("Preencha o campo tipo conta");
-        if (!(clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) != null))
+        if (clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) == null)
             throw new ExecaoMensagem("CPF Informado não existe");
         if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
             throw new ExecaoMensagem("Numero de conta ja existe");
@@ -68,6 +69,9 @@ public class ContaService {
     }
 
     public ContaResponse atualizar(ContaRequest contaRequest) {
+        encontreIdOuErro(contaRequest.getId());
+        if (contaRequest.getId() <= 0)
+            throw new ExecaoMensagem("Preencha id da conta");
         if (contaRequest.getTipoConta().isEmpty())
             throw new ExecaoMensagem("Preencha o campo tipo conta");
         if (!(clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) != null))
@@ -79,7 +83,6 @@ public class ContaService {
             throw new ExecaoMensagem("Deve ser 'pessoa fisica' ou 'pessoa juridica' ou 'governamental' para cadastrar");
         }
 
-        encontreIdOuErro(contaRequest.getId());
         Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
         conta.setId(contaRequest.getId());
         conta.setDigitoVerificador(new Random().nextInt(10));
@@ -90,17 +93,18 @@ public class ContaService {
         return contaResponse;
     }
 
-    public Conta atualizarSaldo(ContaPutDtoDesconto contaPutDtoDesconto) {
-        Optional<Conta> contaId = contaRepository.findById(contaPutDtoDesconto.getId());
-        Conta contaSalva = encontreIdOuErro(contaPutDtoDesconto.getId());
-        if (contaPutDtoDesconto.getSaldo() <= 0)
-            throw new ExecaoMensagem("Digite o valor a ser descontado");
+    public ContaResponseDesconto atualizarSaldo(ContaRequestDesconto contaRequestDesconto) {
+        encontreIdOuErro(contaRequestDesconto.getId());
+        if (contaRequestDesconto.getSaldo() <= 0)
+            throw new ExecaoMensagem("Saldo não pode ser zero");
+        Optional<Conta> conta = contaRepository.findById(contaRequestDesconto.getId());
+        conta.get().setSaldo(conta.get().getSaldo() - contaRequestDesconto.getSaldo());
+        Conta contaMapper = ContaMapper.INSTANCE.toModel(contaRequestDesconto);
 
-        Conta conta = ContaMapper.INSTANCE.toModel(contaPutDtoDesconto);
-        conta.setId(contaSalva.getId());
-        contaId.get().setSaldo(contaId.get().getSaldo() - contaPutDtoDesconto.getSaldo());
-        contaRepository.save(contaId.get());
-        return contaRepository.save(contaId.get());
+        contaRepository.save(conta.get());
+        ContaResponseDesconto contaResponse = ContaMapper.INSTANCE.toDTODesconto(contaMapper);
+        contaResponse.setStatus("Desconto realizado!");
+        return contaResponse;
     }
 
     public void deletar(Long id) {

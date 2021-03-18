@@ -1,8 +1,9 @@
 package com.desafio.controllers;
 
-import com.desafio.dto.contarequest.ContaPutDtoDesconto;
+import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.dto.contarequest.ContaRequest;
 import com.desafio.dto.contaresponse.ContaResponse;
+import com.desafio.dto.contaresponse.ContaResponseDesconto;
 import com.desafio.model.Conta;
 import com.desafio.service.ContaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,8 +36,8 @@ public class ContaController {
     }
 
     @PutMapping(path = "/descontar")
-    public ResponseEntity<Conta> atualizarSaldo(@RequestBody ContaPutDtoDesconto contaPutDtoDesconto) {
-        return new ResponseEntity<>(contaService.atualizarSaldo(contaPutDtoDesconto), HttpStatus.OK);
+    public ResponseEntity<ContaResponseDesconto> atualizarSaldo(@RequestBody ContaRequestDesconto contaRequestDesconto) {
+        return new ResponseEntity<>(contaService.atualizarSaldo(contaRequestDesconto), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")

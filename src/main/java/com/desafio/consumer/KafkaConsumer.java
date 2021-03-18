@@ -1,6 +1,6 @@
 package com.desafio.consumer;
 
-import com.desafio.dto.contarequest.ContaPutDtoDesconto;
+import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.service.ContaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,9 +17,9 @@ public class KafkaConsumer {
     public void consume(String message) throws JsonProcessingException {
         System.out.println("Seu limite de saque acabou - Descontar = " + message);
         ObjectMapper objectMapper = new ObjectMapper();
-        ContaPutDtoDesconto converteMenssagem = objectMapper.readValue(message, ContaPutDtoDesconto.class);
-        ContaPutDtoDesconto contaPutDtoDesconto = ContaPutDtoDesconto.builder().id(converteMenssagem.getId())
+        ContaRequestDesconto converteMenssagem = objectMapper.readValue(message, ContaRequestDesconto.class);
+        ContaRequestDesconto contaRequestDesconto = ContaRequestDesconto.builder().id(converteMenssagem.getId())
                 .saldo(converteMenssagem.getSaldo()).build();
-        contaService.atualizarSaldo(contaPutDtoDesconto);
+        contaService.atualizarSaldo(contaRequestDesconto);
     }
 }

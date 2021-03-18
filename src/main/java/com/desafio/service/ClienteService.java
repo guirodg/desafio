@@ -74,7 +74,7 @@ public class ClienteService {
         if (clienteRequest.getCpfCnpj().isEmpty())
             throw new ExecaoMensagem("Preencha o campo cpf!");
         if (clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj()) != null)
-            throw new ExecaoMensagem("Preencha um cpf válido");
+            throw new ExecaoMensagem("CPF já existe");
 
         validador.validaCpf(clienteRequest.getCpfCnpj());
 
