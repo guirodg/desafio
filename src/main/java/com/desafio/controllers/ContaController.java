@@ -2,7 +2,6 @@ package com.desafio.controllers;
 
 import com.desafio.dto.contarequest.ContaPutDtoDesconto;
 import com.desafio.dto.contarequest.ContaRequest;
-import com.desafio.dto.contarequest.ContaPutDto;
 import com.desafio.dto.contaresponse.ContaResponse;
 import com.desafio.model.Conta;
 import com.desafio.service.ContaService;
@@ -31,8 +30,8 @@ public class ContaController {
     }
 
     @PutMapping
-    public ResponseEntity<Conta> atualizar(@RequestBody ContaPutDto contaPutDto) {
-        return new ResponseEntity<>(contaService.atualizar(contaPutDto), HttpStatus.OK);
+    public ResponseEntity<ContaResponse> atualizar(@Valid @RequestBody ContaRequest contaRequest) {
+        return new ResponseEntity<>(contaService.atualizar(contaRequest), HttpStatus.OK);
     }
 
     @PutMapping(path = "/descontar")

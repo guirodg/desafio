@@ -1,6 +1,5 @@
 package com.desafio.service;
 
-import com.desafio.dto.contarequest.ContaPutDto;
 import com.desafio.dto.contarequest.ContaPutDtoDesconto;
 import com.desafio.dto.contarequest.ContaRequest;
 import com.desafio.dto.contaresponse.ContaResponse;
@@ -29,14 +28,16 @@ public class ContaService {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     public ContaResponse salvar(ContaRequest contaRequest) throws JsonProcessingException {
-        if (contaRequest.getNumeroConta() <= 0)
-            throw new ExecaoMensagem("Preencha o campo numero conta");
         if (contaRequest.getTipoConta().isEmpty())
             throw new ExecaoMensagem("Preencha o campo tipo conta");
         if (!(clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) != null))
             throw new ExecaoMensagem("CPF Informado não existe");
         if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
             throw new ExecaoMensagem("Numero de conta ja existe");
+        if (!contaRequest.getTipoConta().equals("pessoa fisica") != contaRequest.getTipoConta().equals("pessoa juridica")
+                != contaRequest.getTipoConta().equals("governamental")) {
+            throw new ExecaoMensagem("Deve ser 'pessoa fisica' ou 'pessoa juridica' ou 'governamental' para cadastrar");
+        }
 
         int limeteSaque = 5;
         if (contaRequest.getTipoConta().equals("pessoa fisica"))
@@ -66,19 +67,27 @@ public class ContaService {
         return contaResponse;
     }
 
-    public Conta atualizar(ContaPutDto contaPutDto) {
-        if (contaPutDto.getNumeroConta() <= 0 ||
-                contaPutDto.getDigitoVerificador() <= 0 ||
-                contaPutDto.getTipoConta().isEmpty() ||
-                contaPutDto.getCliente().getId() <= 0) {
-            throw new ExecaoMensagem("Preencha todos os campos");
+    public ContaResponse atualizar(ContaRequest contaRequest) {
+        if (contaRequest.getTipoConta().isEmpty())
+            throw new ExecaoMensagem("Preencha o campo tipo conta");
+        if (!(clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) != null))
+            throw new ExecaoMensagem("CPF Informado não existe");
+        if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
+            throw new ExecaoMensagem("Numero de conta ja existe");
+        if (!contaRequest.getTipoConta().equals("pessoa fisica") != contaRequest.getTipoConta().equals("pessoa juridica")
+                != contaRequest.getTipoConta().equals("governamental")) {
+            throw new ExecaoMensagem("Deve ser 'pessoa fisica' ou 'pessoa juridica' ou 'governamental' para cadastrar");
         }
-        if (!clienteRepository.findById(contaPutDto.getCliente().getId()).isPresent())
-            throw new ExecaoMensagem("ID do cliente informada não existe");
-        Conta contaSalva = encontreIdOuErro(contaPutDto.getId());
-        Conta conta = ContaMapper.INSTANCE.toModel(contaPutDto);
-        conta.setId(contaSalva.getId());
-        return contaRepository.save(conta);
+
+        encontreIdOuErro(contaRequest.getId());
+        Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
+        conta.setId(contaRequest.getId());
+        conta.setDigitoVerificador(new Random().nextInt(10));
+        contaRepository.save(conta);
+
+        ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
+        contaResponse.setStatus("Conta atualizada!");
+        return contaResponse;
     }
 
     public Conta atualizarSaldo(ContaPutDtoDesconto contaPutDtoDesconto) {

@@ -2,7 +2,6 @@ package com.desafio.mapper;
 
 import com.desafio.dto.contarequest.ContaPutDtoDesconto;
 import com.desafio.dto.contarequest.ContaRequest;
-import com.desafio.dto.contarequest.ContaPutDto;
 import com.desafio.dto.contaresponse.ContaResponse;
 import com.desafio.model.Conta;
 import org.mapstruct.Mapper;
@@ -14,7 +13,6 @@ public abstract class ContaMapper {
 
     public abstract Conta toModel(ContaRequest contaRequest);
 
-    public abstract Conta toModel(ContaPutDto contaPutDto);
 
     public abstract Conta toModel(ContaPutDtoDesconto contaPutDtoDesconto);
 
