@@ -20,8 +20,8 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final Validador validador;
 
-    public ClienteResponse buscaIdCliente(Long id) {
-        Optional<Cliente> clienteSalvo = Optional.ofNullable(clienteRepository.findById(id).orElseThrow(() ->
+    public ClienteResponse buscaIdCliente(Long cliente) {
+        Optional<Cliente> clienteSalvo = Optional.ofNullable(clienteRepository.findById(cliente).orElseThrow(() ->
                 new ExecaoMensagem("ID nao exite")));
 
         ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(clienteSalvo.get());

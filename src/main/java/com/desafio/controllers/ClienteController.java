@@ -17,9 +17,9 @@ import java.util.List;
 public class ClienteController {
     private final ClienteService clienteService;
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<ClienteResponse> listarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(clienteService.buscaIdCliente(id));
+    @GetMapping(value = "busca")
+    public ResponseEntity<ClienteResponse> listarPorId(@RequestParam Long cliente) {
+        return ResponseEntity.ok(clienteService.buscaIdCliente(cliente));
     }
 
     @GetMapping
