@@ -1,8 +1,8 @@
 package com.desafio.service;
 
-import com.desafio.dto.operacaorequest.OperacaoPostDto;
+import com.desafio.dto.operacaorequest.OperacaoRequest;
+import com.desafio.dto.operacaoresponse.OperacaoResponse;
 import com.desafio.erros.ExecaoMensagem;
-import com.desafio.externo.ControleContaExterno;
 import com.desafio.mapper.OperacaoMapper;
 import com.desafio.model.Conta;
 import com.desafio.model.Operacao;
@@ -10,10 +10,6 @@ import com.desafio.repository.ContaRepository;
 import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,93 +17,99 @@ public class OperacaoService {
     private final OperacaoRepository operacaoRepository;
     private final ContaRepository contaRepository;
 
-    public List<Operacao> listarExtrato(Long contaId) {
-        return operacaoRepository.findAllByContaOrigemId(contaId);
-    }
+//    public List<Operacao> listarExtrato(Long contaId) {
+//        return operacaoRepository.findAllByContaOrigemId(contaId);
+//    }
 
-    public Operacao salvarDeposito(OperacaoPostDto operacaoPostDto) {
-        if (operacaoPostDto.getTipoOperacao().isEmpty())
+    public OperacaoResponse salvarDeposito(OperacaoRequest operacaoRequest) {
+        if (operacaoRequest.getTipoOperacao().isEmpty())
             throw new ExecaoMensagem("Digite tipo da Operacao");
-        if (operacaoPostDto.getContaOrigem().getId() <= 0)
-            throw new ExecaoMensagem("Digite id da conta que deseja relizar operação");
-        if (operacaoPostDto.getValor() <= 0)
+        if (operacaoRequest.getNumeroContaOrigem() <= 0)
+            throw new ExecaoMensagem("Digite Numero da conta origem para operação");
+        if (operacaoRequest.getValor() <= 0)
             throw new ExecaoMensagem("Digite 'valor' para realizar deposito");
-        if (!operacaoPostDto.getTipoOperacao().equals("deposito"))
+        if (!operacaoRequest.getTipoOperacao().equals("deposito"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'deposito'");
 
+        if (contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem()) == null)
+            throw new ExecaoMensagem("Numero da conta origem não existe");
 
-        Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
-        if (!conta.isPresent())
-            throw new ExecaoMensagem("Id da contaOrigem não existe");
-        if (conta.isPresent()) {
-            conta.get().setSaldo(conta.get().getSaldo() + operacaoPostDto.getValor());
-            contaRepository.save(conta.get());
-        }
-        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
-        operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
-        return operacaoRepository.save(operacao);
+        Conta conta = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem());
+        conta.setSaldo(conta.getSaldo() + operacaoRequest.getValor());
+        contaRepository.save(conta);
+
+        Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
+        operacaoRepository.save(operacao);
+
+        OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
+        operacaoResponse.setStatus("Deposito realizado!");
+        return operacaoResponse;
     }
 
-    public Operacao salvarSaque(OperacaoPostDto operacaoPostDto) {
-        if (operacaoPostDto.getValor() <= 0)
+    public OperacaoResponse salvarSaque(OperacaoRequest operacaoRequest) {
+        if (operacaoRequest.getValor() <= 0)
             throw new ExecaoMensagem("Digite o valor do saque");
-        if (operacaoPostDto.getContaOrigem().getId() <= 0)
-            throw new ExecaoMensagem("Digite id da conta que deseja relizar operação");
-        if (!operacaoPostDto.getTipoOperacao().equals("saque"))
+        if (operacaoRequest.getNumeroContaOrigem() <= 0)
+            throw new ExecaoMensagem("Digite Numero da conta que deseja relizar operação");
+        if (!operacaoRequest.getTipoOperacao().equals("saque"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'saque'");
+        if (contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem()) == null)
+            throw new ExecaoMensagem("Numero da conta origem não existe");
 
-
-        Optional<Conta> conta = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
-        if (!conta.isPresent())
-            throw new ExecaoMensagem("Id da contaOrigem não existe");
-        if (conta.get().getSaldo() < operacaoPostDto.getValor())
+        Conta conta = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem());
+        if (conta.getSaldo() < operacaoRequest.getValor())
             throw new ExecaoMensagem("Saldo insuficiente");
 
-        if (conta.get().getSaldo() >= operacaoPostDto.getValor()) {
-            conta.get().setSaldo(conta.get().getSaldo() - operacaoPostDto.getValor());
-            contaRepository.save(conta.get());
+        if (conta.getSaldo() >= operacaoRequest.getValor()) {
+            conta.setSaldo(conta.getSaldo() - operacaoRequest.getValor());
+            contaRepository.save(conta);
         }
 
-        ControleContaExterno controleContaExterno = ControleContaExterno.builder().idConta(operacaoPostDto.getContaOrigem().getId()).build();
-        new RestTemplate().put("http://localhost:8081/controle", controleContaExterno);
+//        ControleContaExterno controleContaExterno = ControleContaExterno.builder().numeroConta(operacaoRequest.getNumeroContaOrigem()).build();
+//        new RestTemplate().put("http://localhost:8081/controle", controleContaExterno);
 
-        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
-        operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
-        return operacaoRepository.save(operacao);
+        Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
+        operacaoRepository.save(operacao);
+        OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
+        operacaoResponse.setStatus("Saque realizado!");
+        return operacaoResponse;
     }
 
-    public Operacao salvarTransferencia(OperacaoPostDto operacaoPostDto) {
-        if (operacaoPostDto.getValor() <= 0)
+    public OperacaoResponse salvarTransferencia(OperacaoRequest operacaoRequest) {
+        if (operacaoRequest.getValor() <= 0)
             throw new ExecaoMensagem("Digite o valor para a transferencia");
-        if (operacaoPostDto.getContaOrigem().getId() <= 0)
-            throw new ExecaoMensagem("Digite id da conta origem");
-        if (!operacaoPostDto.getTipoOperacao().equals("transferencia"))
+        if (operacaoRequest.getNumeroContaOrigem() <= 0)
+            throw new ExecaoMensagem("Digite Numero da conta que deseja relizar operação");
+        if (!operacaoRequest.getTipoOperacao().equals("transferencia"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'transferencia'");
-        if (!contaRepository.findById(operacaoPostDto.getContaDestino().getId()).isPresent())
-            throw new ExecaoMensagem("ID da contaDestino informada não existe");
+        if (operacaoRequest.getNumeroContaOrigem() == operacaoRequest.getNumeroContaDestino())
+            throw new ExecaoMensagem("Não pode realizar transferencia para mesma conta");
 
-        Optional<Conta> contaOrigem = contaRepository.findById(operacaoPostDto.getContaOrigem().getId());
-        if (!contaOrigem.isPresent())
-            throw new ExecaoMensagem("Id da contaOrigem não existe");
-        if (contaOrigem.get().getSaldo() < operacaoPostDto.getValor())
+        if (contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem()) == null)
+            throw new ExecaoMensagem("Numero da conta origem não existe");
+        if (contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaDestino()) == null)
+            throw new ExecaoMensagem("Numero da conta destino não existe");
+
+        Conta contaOrigem = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem());
+
+        if (contaOrigem.getSaldo() < operacaoRequest.getValor()) {
             throw new ExecaoMensagem("Saldo insuficiente da conta origem");
-        if (contaOrigem.get().getSaldo() >= operacaoPostDto.getValor()) {
-            contaOrigem.get().setSaldo(contaOrigem.get().getSaldo() - operacaoPostDto.getValor());
-            contaRepository.save(contaOrigem.get());
-
-            Optional<Conta> contaDestino = contaRepository.findById(operacaoPostDto.getContaDestino().getId());
-            if (!contaDestino.isPresent())
-                throw new ExecaoMensagem("Id da contaDestino não existe");
-            contaDestino.get().setSaldo(contaDestino.get().getSaldo() + operacaoPostDto.getValor());
-            contaRepository.save(contaDestino.get());
-
-            if (contaOrigem.get().getId().equals(contaDestino.get().getId()))
-                throw new ExecaoMensagem("Não pode realizar transferência para própria conta!");
         }
 
-        Operacao operacao = OperacaoMapper.INSTANCE.toOperacao(operacaoPostDto);
-        operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
-        operacao.setContaOrigem(operacaoPostDto.getContaOrigem());
-        return operacaoRepository.save(operacao);
+        if (contaOrigem.getSaldo() >= operacaoRequest.getValor()) {
+            contaOrigem.setSaldo(contaOrigem.getSaldo() - operacaoRequest.getValor());
+            contaRepository.save(contaOrigem);
+
+            Conta contaDestino = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaDestino());
+            contaDestino.setSaldo(contaDestino.getSaldo() + operacaoRequest.getValor());
+            contaRepository.save(contaDestino);
+        }
+
+        Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
+
+        OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
+        operacaoResponse.setStatus("Transferencia realizada!");
+        operacaoRepository.save(operacao);
+        return operacaoResponse;
     }
 }

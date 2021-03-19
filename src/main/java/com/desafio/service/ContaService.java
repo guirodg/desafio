@@ -76,7 +76,7 @@ public class ContaService {
         conta.setDigitoVerificador(new Random().nextInt(10));
         Conta contaSalva = contaRepository.save(conta);
 
-        ControleContaExterno controleContaExterno = ControleContaExterno.builder().idConta(contaSalva.getId()).
+        ControleContaExterno controleContaExterno = ControleContaExterno.builder().numeroConta(contaSalva.getNumeroConta()).
                 limeteSaque(limeteSaque).tipoConta(conta.getTipoConta()).build();
 
         ObjectMapper objectMapper = new ObjectMapper();

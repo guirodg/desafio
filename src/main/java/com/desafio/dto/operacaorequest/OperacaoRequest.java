@@ -1,14 +1,13 @@
 package com.desafio.dto.operacaorequest;
 
-import com.desafio.model.Conta;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class OperacaoPostDto {
+public class OperacaoRequest {
     private double valor;
     private String tipoOperacao;
-    private Conta contaOrigem;
-    private Conta contaDestino;
+    private int numeroContaOrigem;
+    private int numeroContaDestino;
 }

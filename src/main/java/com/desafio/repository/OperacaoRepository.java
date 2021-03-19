@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface OperacaoRepository extends JpaRepository<Operacao, Long> {
-    List<Operacao> findAllByContaOrigemId(Long id);
+    //List<Operacao> findAllByContaOrigemId(Long id);
 }

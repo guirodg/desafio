@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Data
 @NoArgsConstructor
@@ -20,10 +23,10 @@ public class Operacao {
     private Long id;
     private double valor;
     private String tipoOperacao;
-    @ManyToOne
+    //   @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Conta contaOrigem;
-    @ManyToOne
+    private int numeroContaOrigem;
+    //  @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Conta contaDestino;
+    private int numeroContaDestino;
 }

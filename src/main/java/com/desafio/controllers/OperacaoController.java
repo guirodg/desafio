@@ -1,14 +1,15 @@
 package com.desafio.controllers;
 
-import com.desafio.dto.operacaorequest.OperacaoPostDto;
-import com.desafio.model.Operacao;
+import com.desafio.dto.operacaorequest.OperacaoRequest;
+import com.desafio.dto.operacaoresponse.OperacaoResponse;
 import com.desafio.service.OperacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("operacoes")
@@ -16,25 +17,23 @@ import java.util.List;
 public class OperacaoController {
     private final OperacaoService operacaoService;
 
-    @GetMapping
-    public ResponseEntity<List<Operacao>> listarTodosExtratosPorId(@RequestParam Long contaId) {
-        return ResponseEntity.ok(operacaoService.listarExtrato(contaId));
-    }
+//    @GetMapping
+//    public ResponseEntity<List<Operacao>> listarTodosExtratosPorId(@RequestParam Long contaId) {
+//        return ResponseEntity.ok(operacaoService.listarExtrato(contaId));
+//    }
 
     @PostMapping(path = "/deposito")
-    public ResponseEntity<Operacao> salvarSaldo(@RequestBody OperacaoPostDto operacaoPostDto) {
-        return new ResponseEntity<>(operacaoService.salvarDeposito(operacaoPostDto), HttpStatus.CREATED);
+    public ResponseEntity<OperacaoResponse> salvarSaldo(@RequestBody OperacaoRequest operacaoRequest) {
+        return new ResponseEntity<>(operacaoService.salvarDeposito(operacaoRequest), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/saque")
-    public ResponseEntity<Operacao> salvarSaque(@RequestBody OperacaoPostDto operacaoPostDto) {
-        return new ResponseEntity<>(operacaoService.salvarSaque(operacaoPostDto), HttpStatus.CREATED);
+    public ResponseEntity<OperacaoResponse> salvarSaque(@RequestBody OperacaoRequest operacaoRequest) {
+        return new ResponseEntity<>(operacaoService.salvarSaque(operacaoRequest), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/transferencia")
-    public ResponseEntity<Operacao> salvarTransferencia(@RequestBody OperacaoPostDto operacaoPostDto) {
-        return new ResponseEntity<>(operacaoService.salvarTransferencia(operacaoPostDto), HttpStatus.CREATED);
+    public ResponseEntity<OperacaoResponse> salvarTransferencia(@RequestBody OperacaoRequest operacaoRequest) {
+        return new ResponseEntity<>(operacaoService.salvarTransferencia(operacaoRequest), HttpStatus.CREATED);
     }
-
-
 }
