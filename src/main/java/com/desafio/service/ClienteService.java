@@ -20,11 +20,12 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final Validador validador;
 
-    public ClienteResponse buscaIdCliente(Long clienteId) {
-        Optional<Cliente> clienteSalvo = Optional.ofNullable(clienteRepository.findById(clienteId).orElseThrow(() ->
-                new ExecaoMensagem("ID nao exite")));
+    public ClienteResponse buscaIdCliente(String cpf) {
+        Cliente cliente = clienteRepository.findByCpfCnpj(cpf);
+        if (cliente == null)
+            throw new ExecaoMensagem("CPF Informado não existe");
 
-        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(clienteSalvo.get());
+        ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
         clienteResponse.setStatus("Cliente obtido com sucesso!");
         return clienteResponse;
     }
