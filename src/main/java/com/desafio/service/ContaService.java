@@ -11,6 +11,7 @@ import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
 import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
+import com.desafio.util.Validador;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,12 +66,11 @@ public class ContaService {
             throw new ExecaoMensagem("CPF Informado não existe");
         if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
             throw new ExecaoMensagem("Numero de conta ja existe");
-        if (!contaRequest.getTipoConta().equals("pessoa fisica") != contaRequest.getTipoConta().equals("pessoa juridica")
-                != contaRequest.getTipoConta().equals("governamental")) {
+        if (!contaRequest.getTipoConta().equals("pessoa fisica") == contaRequest.getTipoConta().equals("pessoa juridica") == contaRequest.getTipoConta().equals("governamental")) {
             throw new ExecaoMensagem("Deve ser 'pessoa fisica' ou 'pessoa juridica' ou 'governamental' para cadastrar");
         }
 
-        int limeteSaque = 5;
+        int limeteSaque = 0;
         if (contaRequest.getTipoConta().equals("pessoa fisica"))
             limeteSaque = 5;
         if (contaRequest.getTipoConta().equals("pessoa juridica"))
@@ -103,14 +103,12 @@ public class ContaService {
             throw new ExecaoMensagem("Preencha id da conta");
         if (contaRequest.getTipoConta().isEmpty())
             throw new ExecaoMensagem("Preencha o campo tipo conta");
-        if (!(clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) != null))
-            throw new ExecaoMensagem("CPF Informado não existe");
         if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
             throw new ExecaoMensagem("Numero de conta ja existe");
-        if (!contaRequest.getTipoConta().equals("pessoa fisica") != contaRequest.getTipoConta().equals("pessoa juridica")
-                != contaRequest.getTipoConta().equals("governamental")) {
+        if (!contaRequest.getTipoConta().equals("pessoa fisica") == contaRequest.getTipoConta().equals("pessoa juridica") == contaRequest.getTipoConta().equals("governamental")) {
             throw new ExecaoMensagem("Deve ser 'pessoa fisica' ou 'pessoa juridica' ou 'governamental' para cadastrar");
         }
+        Validador.validaCpf(contaRequest.getCpfCliente());
 
         Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
         conta.setId(contaRequest.getId());
