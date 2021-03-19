@@ -10,6 +10,10 @@ import com.desafio.repository.ContaRepository;
 import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,9 +21,20 @@ public class OperacaoService {
     private final OperacaoRepository operacaoRepository;
     private final ContaRepository contaRepository;
 
-//    public List<Operacao> listarExtrato(Long contaId) {
-//        return operacaoRepository.findAllByContaOrigemId(contaId);
-//    }
+    public List<OperacaoResponse> listarExtrato(@RequestParam int numeroConta) {
+        List<Operacao> operacaoNumero = operacaoRepository.findAllByNumeroContaOrigem(numeroConta);
+        if (operacaoNumero == null)
+            throw new ExecaoMensagem("Não existe operaçoes para esse numero de Conta");
+
+        List<OperacaoResponse> operacaoResponses = new ArrayList<>();
+        for (Operacao operacao : operacaoNumero) {
+            Operacao operacaoSalva = operacaoRepository.save(operacao);
+            OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacaoSalva);
+            operacaoResponse.setStatus("Extrato realizado!");
+            operacaoResponses.add(operacaoResponse);
+        }
+        return operacaoResponses;
+    }
 
     public OperacaoResponse salvarDeposito(OperacaoRequest operacaoRequest) {
         if (operacaoRequest.getTipoOperacao().isEmpty())

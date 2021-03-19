@@ -6,10 +6,8 @@ import com.desafio.service.OperacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("operacoes")
@@ -17,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class OperacaoController {
     private final OperacaoService operacaoService;
 
-//    @GetMapping
-//    public ResponseEntity<List<Operacao>> listarTodosExtratosPorId(@RequestParam Long contaId) {
-//        return ResponseEntity.ok(operacaoService.listarExtrato(contaId));
-//    }
+    @GetMapping
+    public ResponseEntity<List<OperacaoResponse>> listarTodosExtratosPorId(@RequestParam int numeroConta) {
+        return ResponseEntity.ok(operacaoService.listarExtrato(numeroConta));
+    }
 
     @PostMapping(path = "/deposito")
     public ResponseEntity<OperacaoResponse> salvarSaldo(@RequestBody OperacaoRequest operacaoRequest) {
