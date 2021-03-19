@@ -8,6 +8,6 @@ public interface ContaRepository extends JpaRepository<Conta, Long> {
 
     Conta findByCpfCliente(String cpf);
 
-    Conta findByDigitoVerificador(int digito);
+    Conta findByAgencia(int digito);
 
 }

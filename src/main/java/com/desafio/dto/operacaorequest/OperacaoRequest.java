@@ -9,5 +9,7 @@ public class OperacaoRequest {
     private double valor;
     private String tipoOperacao;
     private int numeroContaOrigem;
+    private int agenciaOrigem;
     private int numeroContaDestino;
+    private int agenciaDestino;
 }

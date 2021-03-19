@@ -23,10 +23,10 @@ public class Operacao {
     private Long id;
     private double valor;
     private String tipoOperacao;
-    //   @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private int numeroContaOrigem;
-    //  @ManyToOne
+    private int agenciaOrigem;
     @OnDelete(action = OnDeleteAction.CASCADE)
     private int numeroContaDestino;
+    private int agenciaDestino;
 }

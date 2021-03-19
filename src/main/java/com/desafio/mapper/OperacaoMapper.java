@@ -2,6 +2,7 @@ package com.desafio.mapper;
 
 import com.desafio.dto.operacaorequest.OperacaoRequest;
 import com.desafio.dto.operacaoresponse.OperacaoResponse;
+import com.desafio.dto.operacaoresponse.OperacaoResponseDepositoSaque;
 import com.desafio.model.Operacao;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -13,5 +14,7 @@ public abstract class OperacaoMapper {
     public abstract Operacao toModel(OperacaoRequest operacaoRequest);
 
     public abstract OperacaoResponse toDto(Operacao operacao);
+
+    public abstract OperacaoResponseDepositoSaque toDtoDepositoSaque(Operacao operacao);
 
 }

@@ -2,10 +2,13 @@ package com.desafio.service;
 
 import com.desafio.dto.operacaorequest.OperacaoRequest;
 import com.desafio.dto.operacaoresponse.OperacaoResponse;
+import com.desafio.dto.operacaoresponse.OperacaoResponseDepositoSaque;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.mapper.OperacaoMapper;
+import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
 import com.desafio.model.Operacao;
+import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
 import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,17 +17,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OperacaoService {
     private final OperacaoRepository operacaoRepository;
     private final ContaRepository contaRepository;
+    private final ClienteRepository clienteRepository;
 
-    public List<OperacaoResponse> listarExtrato(@RequestParam int numeroConta) {
+    public List<OperacaoResponse> listarExtrato(String cpfCliente, int numeroConta, int agencia) {
         List<Operacao> operacaoNumero = operacaoRepository.findAllByNumeroContaOrigem(numeroConta);
-        if (operacaoNumero == null)
-            throw new ExecaoMensagem("Não existe operaçoes para esse numero de Conta");
+        Cliente cliente = clienteRepository.findByCpfCnpj(cpfCliente);
+        Conta conta = contaRepository.findByNumeroConta(numeroConta);
+
+        if (conta == null)
+            throw new ExecaoMensagem("Conta informada não existe");
+        if (conta.getAgencia() != agencia)
+            throw new ExecaoMensagem("Agencia informada não existe");
+        if (cliente == null)
+            throw new ExecaoMensagem("CPF informado não existe");
 
         List<OperacaoResponse> operacaoResponses = new ArrayList<>();
         for (Operacao operacao : operacaoNumero) {
@@ -36,7 +48,7 @@ public class OperacaoService {
         return operacaoResponses;
     }
 
-    public OperacaoResponse salvarDeposito(OperacaoRequest operacaoRequest) {
+    public OperacaoResponseDepositoSaque salvarDeposito(OperacaoRequest operacaoRequest) {
         if (operacaoRequest.getTipoOperacao().isEmpty())
             throw new ExecaoMensagem("Digite tipo da Operacao");
         if (operacaoRequest.getNumeroContaOrigem() <= 0)
@@ -46,32 +58,37 @@ public class OperacaoService {
         if (!operacaoRequest.getTipoOperacao().equals("deposito"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'deposito'");
 
-        if (contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem()) == null)
-            throw new ExecaoMensagem("Numero da conta origem não existe");
-
         Conta conta = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem());
+        if (conta == null)
+            throw new ExecaoMensagem("Numero da conta origem não existe");
+        if (conta.getAgencia() != operacaoRequest.getAgenciaOrigem())
+            throw new ExecaoMensagem("Agencia da conta origem não confere");
+
         conta.setSaldo(conta.getSaldo() + operacaoRequest.getValor());
         contaRepository.save(conta);
 
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
         operacaoRepository.save(operacao);
 
-        OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
-        operacaoResponse.setStatus("Deposito realizado!");
-        return operacaoResponse;
+        OperacaoResponseDepositoSaque operacaoResponseDepositoSaque = OperacaoMapper.INSTANCE.toDtoDepositoSaque(operacao);
+        operacaoResponseDepositoSaque.setStatus("Deposito realizado!");
+        return operacaoResponseDepositoSaque;
     }
 
-    public OperacaoResponse salvarSaque(OperacaoRequest operacaoRequest) {
+    public OperacaoResponseDepositoSaque salvarSaque(OperacaoRequest operacaoRequest) {
         if (operacaoRequest.getValor() <= 0)
             throw new ExecaoMensagem("Digite o valor do saque");
         if (operacaoRequest.getNumeroContaOrigem() <= 0)
             throw new ExecaoMensagem("Digite Numero da conta que deseja relizar operação");
         if (!operacaoRequest.getTipoOperacao().equals("saque"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'saque'");
-        if (contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem()) == null)
-            throw new ExecaoMensagem("Numero da conta origem não existe");
 
         Conta conta = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem());
+        if (conta == null)
+            throw new ExecaoMensagem("Numero da conta origem não existe");
+        if (conta.getAgencia() != operacaoRequest.getAgenciaOrigem())
+            throw new ExecaoMensagem("Agencia da conta origem não confere");
+
         if (conta.getSaldo() < operacaoRequest.getValor())
             throw new ExecaoMensagem("Saldo insuficiente");
 
@@ -85,9 +102,9 @@ public class OperacaoService {
 
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
         operacaoRepository.save(operacao);
-        OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
-        operacaoResponse.setStatus("Saque realizado!");
-        return operacaoResponse;
+        OperacaoResponseDepositoSaque operacaoResponseDepositoSaque = OperacaoMapper.INSTANCE.toDtoDepositoSaque(operacao);
+        operacaoResponseDepositoSaque.setStatus("Saque realizado!");
+        return operacaoResponseDepositoSaque;
     }
 
     public OperacaoResponse salvarTransferencia(OperacaoRequest operacaoRequest) {
@@ -100,13 +117,16 @@ public class OperacaoService {
         if (operacaoRequest.getNumeroContaOrigem() == operacaoRequest.getNumeroContaDestino())
             throw new ExecaoMensagem("Não pode realizar transferencia para mesma conta");
 
-        if (contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem()) == null)
-            throw new ExecaoMensagem("Numero da conta origem não existe");
-        if (contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaDestino()) == null)
-            throw new ExecaoMensagem("Numero da conta destino não existe");
-
         Conta contaOrigem = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem());
-
+        Conta contaDestino = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaDestino());
+        if (contaOrigem == null)
+            throw new ExecaoMensagem("Numero da conta origem não existe");
+        if (contaDestino == null)
+            throw new ExecaoMensagem("Numero da conta destino não existe");
+        if (contaOrigem.getAgencia() != operacaoRequest.getAgenciaOrigem())
+            throw new ExecaoMensagem("Agencia da conta origem não confere");
+        if (contaDestino.getAgencia() != operacaoRequest.getAgenciaDestino())
+            throw new ExecaoMensagem("Agencia da conta destino não confere");
         if (contaOrigem.getSaldo() < operacaoRequest.getValor()) {
             throw new ExecaoMensagem("Saldo insuficiente da conta origem");
         }
@@ -114,14 +134,10 @@ public class OperacaoService {
         if (contaOrigem.getSaldo() >= operacaoRequest.getValor()) {
             contaOrigem.setSaldo(contaOrigem.getSaldo() - operacaoRequest.getValor());
             contaRepository.save(contaOrigem);
-
-            Conta contaDestino = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaDestino());
             contaDestino.setSaldo(contaDestino.getSaldo() + operacaoRequest.getValor());
             contaRepository.save(contaDestino);
         }
-
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
-
         OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
         operacaoResponse.setStatus("Transferencia realizada!");
         operacaoRepository.save(operacao);

@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContaResponse {
     private Long id;
+    private String cpfCliente;
+    private int agencia;
     private int numeroConta;
     private String tipoConta;
-    private int digitoVerificador;
     private double saldo;
-    private String cpfCliente;
     private String status;
 }

@@ -7,6 +7,7 @@ import com.desafio.dto.contaresponse.ContaResponseDesconto;
 import com.desafio.erros.ExecaoMensagem;
 import com.desafio.externo.ControleContaExterno;
 import com.desafio.mapper.ContaMapper;
+import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
 import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
@@ -30,16 +31,16 @@ public class ContaService {
     private final ClienteRepository clienteRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public ContaResponse listarPorParam(String cpfCliente, int numeroConta, int digito) {
-        Conta conta = contaRepository.findByCpfCliente(cpfCliente);
-        Conta contaNumero = contaRepository.findByNumeroConta(numeroConta);
-        Conta contaDigito = contaRepository.findByDigitoVerificador(digito);
-        if (conta == null)
+    public ContaResponse listarPorParam(String cpfCliente, int numeroConta, int agencia) {
+        Cliente cliente = clienteRepository.findByCpfCnpj(cpfCliente);
+        Conta conta = contaRepository.findByNumeroConta(numeroConta);
+        if (cliente == null)
             throw new ExecaoMensagem("Não existe conta para o CPF informado");
-        if (contaNumero == null)
+        if (conta == null)
             throw new ExecaoMensagem("Não existe numero da conta informado");
-        if (contaDigito == null)
-            throw new ExecaoMensagem("Digito não confere");
+        if (conta.getAgencia() != agencia)
+            throw new ExecaoMensagem("Agencia informada não confere");
+
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
         contaResponse.setStatus("Busca com sucesso!");
         return contaResponse;
@@ -80,7 +81,6 @@ public class ContaService {
         Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
         conta.setSaldo(0);
         conta.setCpfCliente(contaRequest.getCpfCliente());
-        conta.setDigitoVerificador(new Random().nextInt(10));
         Conta contaSalva = contaRepository.save(conta);
 
         ControleContaExterno controleContaExterno = ControleContaExterno.builder().numeroConta(contaSalva.getNumeroConta()).
@@ -92,7 +92,7 @@ public class ContaService {
 
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
         contaResponse.setCpfCliente(contaRequest.getCpfCliente());
-        contaResponse.setDigitoVerificador(conta.getDigitoVerificador());
+        contaResponse.setAgencia(conta.getAgencia());
         contaResponse.setStatus("Conta cadastrada com Sucesso");
         return contaResponse;
     }
@@ -114,7 +114,7 @@ public class ContaService {
 
         Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
         conta.setId(contaRequest.getId());
-        conta.setDigitoVerificador(new Random().nextInt(10));
+        conta.setAgencia(new Random().nextInt(10));
         contaRepository.save(conta);
 
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
