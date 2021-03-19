@@ -30,10 +30,17 @@ public class ContaService {
     private final ClienteRepository clienteRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public ContaResponse buscaIdConta(Long contaId) {
-        Optional<Conta> conta = Optional.ofNullable(contaRepository.findById(contaId).orElseThrow(() ->
-                new ExecaoMensagem("ID não existe")));
-        ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta.get());
+    public ContaResponse listarPorParam(String cpfCliente, int numeroConta, int digito) {
+        Conta conta = contaRepository.findByCpfCliente(cpfCliente);
+        Conta contaNumero = contaRepository.findByNumeroConta(numeroConta);
+        Conta contaDigito = contaRepository.findByDigitoVerificador(digito);
+        if (conta == null)
+            throw new ExecaoMensagem("Não existe conta para o CPF informado");
+        if (contaNumero == null)
+            throw new ExecaoMensagem("Não existe numero da conta informado");
+        if (contaDigito == null)
+            throw new ExecaoMensagem("Digito não confere");
+        ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
         contaResponse.setStatus("Busca com sucesso!");
         return contaResponse;
     }

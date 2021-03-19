@@ -18,8 +18,8 @@ public class ClienteController {
     private final ClienteService clienteService;
 
     @GetMapping(value = "busca")
-    public ResponseEntity<ClienteResponse> listarPorId(@RequestParam String cpf) {
-        return ResponseEntity.ok(clienteService.buscaIdCliente(cpf));
+    public ResponseEntity<ClienteResponse> listarPorCpf(@RequestParam String cpfCliente) {
+        return ResponseEntity.ok(clienteService.buscaCpfCliente(cpfCliente));
     }
 
     @GetMapping

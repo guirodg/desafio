@@ -21,8 +21,9 @@ public class ContaController {
     private final ContaService contaService;
 
     @GetMapping(value = "busca")
-    public ResponseEntity<ContaResponse> listarPorId(@RequestParam Long contaId) {
-        return ResponseEntity.ok(contaService.buscaIdConta(contaId));
+    public ResponseEntity<ContaResponse> listarPorParam(@Valid @RequestParam String cpfCliente,
+                                                        @RequestParam int numeroConta, @RequestParam int digito) {
+        return ResponseEntity.ok(contaService.listarPorParam(cpfCliente, numeroConta, digito));
     }
 
     @GetMapping

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +19,8 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final Validador validador;
 
-    public ClienteResponse buscaIdCliente(String cpf) {
-        Cliente cliente = clienteRepository.findByCpfCnpj(cpf);
+    public ClienteResponse buscaCpfCliente(String cpfCliente) {
+        Cliente cliente = clienteRepository.findByCpfCnpj(cpfCliente);
         if (cliente == null)
             throw new ExecaoMensagem("CPF Informado não existe");
 
