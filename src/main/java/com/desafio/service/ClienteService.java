@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClienteService {
     private final ClienteRepository clienteRepository;
-    private final Validador validador;
 
     public ClienteResponse buscaCpfCliente(String cpfCliente) {
         Cliente cliente = clienteRepository.findByCpfCnpj(cpfCliente);
@@ -54,7 +53,7 @@ public class ClienteService {
         if (clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj()) != null)
             throw new ExecaoMensagem("CPF já existe");
 
-        validador.validaCpf(clienteRequest.getCpfCnpj());
+        Validador.validaCpf(clienteRequest.getCpfCnpj());
 
         Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
@@ -64,6 +63,8 @@ public class ClienteService {
     }
 
     public ClienteResponse atualizar(ClienteRequest clienteRequest) {
+        if (clienteRequest.getId() == null)
+            throw new ExecaoMensagem("ID não pode ser nulo");
         clienteRequest.setId(encontreIdOuErro(clienteRequest.getId()).getId());
         if (clienteRequest.getNome().isEmpty() || clienteRequest.getNome().equals(null))
             throw new ExecaoMensagem("Preencha o campo nome!");
@@ -76,7 +77,7 @@ public class ClienteService {
         if (clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj()) != null)
             throw new ExecaoMensagem("CPF já existe");
 
-        validador.validaCpf(clienteRequest.getCpfCnpj());
+        Validador.validaCpf(clienteRequest.getCpfCnpj());
 
         Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);

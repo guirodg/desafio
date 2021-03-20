@@ -14,6 +14,8 @@ import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,10 +66,11 @@ public class OperacaoService {
 
         conta.setSaldo(conta.getSaldo() + operacaoRequest.getValor());
         contaRepository.save(conta);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyyy hh:mm");
+        operacaoRequest.setData(LocalDateTime.now().format(dateTimeFormatter));
 
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
         operacaoRepository.save(operacao);
-
         OperacaoResponseDepositoSaque operacaoResponseDepositoSaque = OperacaoMapper.INSTANCE.toDtoDepositoSaque(operacao);
         operacaoResponseDepositoSaque.setStatus("Deposito realizado!");
         return operacaoResponseDepositoSaque;
@@ -94,6 +97,8 @@ public class OperacaoService {
             conta.setSaldo(conta.getSaldo() - operacaoRequest.getValor());
             contaRepository.save(conta);
         }
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyyy hh:mm");
+        operacaoRequest.setData(LocalDateTime.now().format(dateTimeFormatter));
 
 //        ControleContaExterno controleContaExterno = ControleContaExterno.builder().numeroConta(operacaoRequest.getNumeroContaOrigem()).build();
 //        new RestTemplate().put("http://localhost:8081/controle", controleContaExterno);
@@ -135,6 +140,10 @@ public class OperacaoService {
             contaDestino.setSaldo(contaDestino.getSaldo() + operacaoRequest.getValor());
             contaRepository.save(contaDestino);
         }
+
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyyy hh:mm");
+        operacaoRequest.setData(LocalDateTime.now().format(dateTimeFormatter));
+
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
         OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
         operacaoResponse.setStatus("Transferencia realizada!");

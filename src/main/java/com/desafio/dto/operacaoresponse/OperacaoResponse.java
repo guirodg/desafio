@@ -10,5 +10,6 @@ public class OperacaoResponse {
     private int agenciaOrigem;
     private int numeroContaDestino;
     private int agenciaDestino;
+    private String data;
     private String status;
 }

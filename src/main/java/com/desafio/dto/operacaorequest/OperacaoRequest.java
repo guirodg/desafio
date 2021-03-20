@@ -3,6 +3,8 @@ package com.desafio.dto.operacaorequest;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 public class OperacaoRequest {
@@ -12,4 +14,5 @@ public class OperacaoRequest {
     private int agenciaOrigem;
     private int numeroContaDestino;
     private int agenciaDestino;
+    private String data;
 }

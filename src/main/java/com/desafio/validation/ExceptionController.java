@@ -1,6 +1,5 @@
 package com.desafio.validation;
 
-import ch.qos.logback.classic.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

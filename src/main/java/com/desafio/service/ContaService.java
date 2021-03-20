@@ -66,8 +66,8 @@ public class ContaService {
             throw new ExecaoMensagem("CPF Informado não existe");
         if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
             throw new ExecaoMensagem("Numero de conta ja existe");
-        if (!contaRequest.getTipoConta().equals("pessoa fisica") == contaRequest.getTipoConta().equals("pessoa juridica") == contaRequest.getTipoConta().equals("governamental")) {
-            throw new ExecaoMensagem("Deve ser 'pessoa fisica' ou 'pessoa juridica' ou 'governamental' para cadastrar");
+        if (!contaRequest.getTipoConta().equalsIgnoreCase("PF") == contaRequest.getTipoConta().equalsIgnoreCase("PJ") == contaRequest.getTipoConta().equalsIgnoreCase("GOV")) {
+            throw new ExecaoMensagem("Deve ser 'PF' ou 'PJ' ou 'GOV' para cadastrar");
         }
 
         int limeteSaque = 0;
