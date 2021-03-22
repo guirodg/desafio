@@ -18,7 +18,7 @@ public class Conta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-   @Column(unique = true)
+    @Column(unique = true)
     private int numeroConta;
     private String tipoConta;
     private int agencia;

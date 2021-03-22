@@ -12,7 +12,8 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContaRequestDesconto {
-    private Long id;
+    private int numeroConta;
+    private int agencia;
     @NotEmpty(message = "Saldo não pode ser nulo ou vazio")
     private double saldo;
 }

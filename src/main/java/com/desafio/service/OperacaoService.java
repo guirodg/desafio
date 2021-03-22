@@ -4,6 +4,7 @@ import com.desafio.dto.operacaorequest.OperacaoRequest;
 import com.desafio.dto.operacaoresponse.OperacaoResponse;
 import com.desafio.dto.operacaoresponse.OperacaoResponseDepositoSaque;
 import com.desafio.erros.ExecaoMensagem;
+import com.desafio.externo.ControleContaExterno;
 import com.desafio.mapper.OperacaoMapper;
 import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
@@ -13,6 +14,7 @@ import com.desafio.repository.ContaRepository;
 import com.desafio.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -66,7 +68,7 @@ public class OperacaoService {
 
         conta.setSaldo(conta.getSaldo() + operacaoRequest.getValor());
         contaRepository.save(conta);
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyyy hh:mm");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm");
         operacaoRequest.setData(LocalDateTime.now().format(dateTimeFormatter));
 
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
@@ -97,11 +99,14 @@ public class OperacaoService {
             conta.setSaldo(conta.getSaldo() - operacaoRequest.getValor());
             contaRepository.save(conta);
         }
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyyy hh:mm");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm");
         operacaoRequest.setData(LocalDateTime.now().format(dateTimeFormatter));
 
-//        ControleContaExterno controleContaExterno = ControleContaExterno.builder().numeroConta(operacaoRequest.getNumeroContaOrigem()).build();
-//        new RestTemplate().put("http://localhost:8081/controle", controleContaExterno);
+        ControleContaExterno controleContaExterno = ControleContaExterno.builder()
+                .numeroConta(operacaoRequest.getNumeroContaOrigem())
+                .agencia(operacaoRequest.getAgenciaOrigem())
+                .build();
+        new RestTemplate().put("http://localhost:8081/controle", controleContaExterno);
 
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
         operacaoRepository.save(operacao);
@@ -141,7 +146,7 @@ public class OperacaoService {
             contaRepository.save(contaDestino);
         }
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyyy hh:mm");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm");
         operacaoRequest.setData(LocalDateTime.now().format(dateTimeFormatter));
 
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);

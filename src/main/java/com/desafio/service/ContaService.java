@@ -66,25 +66,31 @@ public class ContaService {
             throw new ExecaoMensagem("CPF Informado não existe");
         if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
             throw new ExecaoMensagem("Numero de conta ja existe");
-        if (!contaRequest.getTipoConta().equalsIgnoreCase("PF") == contaRequest.getTipoConta().equalsIgnoreCase("PJ") == contaRequest.getTipoConta().equalsIgnoreCase("GOV")) {
+        if (!contaRequest.getTipoConta().equalsIgnoreCase("PF") == contaRequest.getTipoConta()
+                .equalsIgnoreCase("PJ") == contaRequest.getTipoConta().equalsIgnoreCase("GOV")) {
             throw new ExecaoMensagem("Deve ser 'PF' ou 'PJ' ou 'GOV' para cadastrar");
         }
 
         int limeteSaque = 0;
-        if (contaRequest.getTipoConta().equals("pessoa fisica"))
+        if (contaRequest.getTipoConta().equals("PF"))
             limeteSaque = 5;
-        if (contaRequest.getTipoConta().equals("pessoa juridica"))
+        if (contaRequest.getTipoConta().equals("PJ"))
             limeteSaque = 50;
-        if (contaRequest.getTipoConta().equals("governamental"))
+        if (contaRequest.getTipoConta().equals("GOV"))
             limeteSaque = 250;
 
         Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
         conta.setSaldo(0);
         conta.setCpfCliente(contaRequest.getCpfCliente());
-        Conta contaSalva = contaRepository.save(conta);
+        contaRepository.save(conta);
 
-        ControleContaExterno controleContaExterno = ControleContaExterno.builder().numeroConta(contaSalva.getNumeroConta()).
-                limeteSaque(limeteSaque).tipoConta(conta.getTipoConta()).build();
+        ControleContaExterno controleContaExterno = ControleContaExterno.builder()
+                .cpfCliente(contaRequest.getCpfCliente())
+                .numeroConta(contaRequest.getNumeroConta())
+                .agencia(contaRequest.getAgencia())
+                .limeteSaque(limeteSaque)
+                .tipoConta(conta.getTipoConta())
+                .build();
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonControleConta = objectMapper.writeValueAsString(controleContaExterno);
@@ -121,14 +127,13 @@ public class ContaService {
     }
 
     public ContaResponseDesconto atualizarSaldo(ContaRequestDesconto contaRequestDesconto) {
-        encontreIdOuErro(contaRequestDesconto.getId());
         if (contaRequestDesconto.getSaldo() <= 0)
             throw new ExecaoMensagem("Saldo não pode ser zero");
-        Optional<Conta> conta = contaRepository.findById(contaRequestDesconto.getId());
-        conta.get().setSaldo(conta.get().getSaldo() - contaRequestDesconto.getSaldo());
-        Conta contaMapper = ContaMapper.INSTANCE.toModel(contaRequestDesconto);
+        Conta conta = contaRepository.findByNumeroConta(contaRequestDesconto.getNumeroConta());
+        conta.setSaldo(conta.getSaldo() - contaRequestDesconto.getSaldo());
 
-        contaRepository.save(conta.get());
+        Conta contaMapper = ContaMapper.INSTANCE.toModel(contaRequestDesconto);
+        contaRepository.save(conta);
         ContaResponseDesconto contaResponse = ContaMapper.INSTANCE.toDTODesconto(contaMapper);
         contaResponse.setStatus("Desconto realizado!");
         return contaResponse;

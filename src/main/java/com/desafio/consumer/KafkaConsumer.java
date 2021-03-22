@@ -18,7 +18,8 @@ public class KafkaConsumer {
         System.out.println("Seu limite de saque acabou - Descontar = " + message);
         ObjectMapper objectMapper = new ObjectMapper();
         ContaRequestDesconto converteMenssagem = objectMapper.readValue(message, ContaRequestDesconto.class);
-        ContaRequestDesconto contaRequestDesconto = ContaRequestDesconto.builder().id(converteMenssagem.getId())
+        ContaRequestDesconto contaRequestDesconto = ContaRequestDesconto.builder()
+                .numeroConta(converteMenssagem.getNumeroConta())
                 .saldo(converteMenssagem.getSaldo()).build();
         contaService.atualizarSaldo(contaRequestDesconto);
     }
