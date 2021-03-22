@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -72,11 +71,11 @@ public class ContaService {
         }
 
         int limeteSaque = 0;
-        if (contaRequest.getTipoConta().equals("PF"))
+        if (contaRequest.getTipoConta().equalsIgnoreCase("PF"))
             limeteSaque = 5;
-        if (contaRequest.getTipoConta().equals("PJ"))
+        if (contaRequest.getTipoConta().equalsIgnoreCase("PJ"))
             limeteSaque = 50;
-        if (contaRequest.getTipoConta().equals("GOV"))
+        if (contaRequest.getTipoConta().equalsIgnoreCase("GOV"))
             limeteSaque = 250;
 
         Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);

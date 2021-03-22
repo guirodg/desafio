@@ -3,8 +3,6 @@ package com.desafio.dto.operacaorequest;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 public class OperacaoRequest {

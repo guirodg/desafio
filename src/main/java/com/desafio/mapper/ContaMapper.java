@@ -1,7 +1,7 @@
 package com.desafio.mapper;
 
-import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.dto.contarequest.ContaRequest;
+import com.desafio.dto.contarequest.ContaRequestDesconto;
 import com.desafio.dto.contaresponse.ContaResponse;
 import com.desafio.dto.contaresponse.ContaResponseDesconto;
 import com.desafio.model.Conta;
