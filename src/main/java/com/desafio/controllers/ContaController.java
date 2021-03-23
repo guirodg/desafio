@@ -46,9 +46,9 @@ public class ContaController {
         return new ResponseEntity<>(contaService.atualizarSaldo(contaRequestDesconto), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        contaService.deletar(id);
+    @DeleteMapping
+    public ResponseEntity<Void> deletar(@RequestParam int numeroConta) {
+        contaService.deletar(numeroConta);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

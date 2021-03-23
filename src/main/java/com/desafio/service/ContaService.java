@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 @Service
@@ -42,18 +43,19 @@ public class ContaService {
             throw new ExecaoMensagem("Agencia informada não confere");
 
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
-        contaResponse.setStatus("Busca com sucesso!");
         return contaResponse;
     }
 
     public List<ContaResponse> listaConta() {
-        List<ContaResponse> contaResponses = new ArrayList<>();
         List<Conta> contas = contaRepository.findAll();
+        List<ContaResponse> contaResponses = new ArrayList<>();
+
         for (Conta conta : contas) {
-            Conta contaSalva = contaRepository.save(conta);
-            ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(contaSalva);
-            contaResponse.setStatus("Sucesso!");
+            ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
             contaResponses.add(contaResponse);
+            if (Objects.isNull(contaResponses.get(0).getStatus())) {
+                contaResponse.setStatus(contas.size() + " contas cadastradas");
+            }
         }
         return contaResponses;
     }
@@ -98,20 +100,14 @@ public class ContaService {
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
         contaResponse.setCpfCliente(contaRequest.getCpfCliente());
         contaResponse.setAgencia(conta.getAgencia());
-        contaResponse.setStatus("Conta cadastrada com Sucesso");
         return contaResponse;
     }
 
     public ContaResponse atualizar(ContaRequest contaRequest) {
-        encontreIdOuErro(contaRequest.getId());
-        if (contaRequest.getId() <= 0)
-            throw new ExecaoMensagem("Preencha id da conta");
         if (clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) == null)
             throw new ExecaoMensagem("CPF Informado não existe");
         if (contaRequest.getTipoConta().isEmpty())
             throw new ExecaoMensagem("Preencha o campo tipo conta");
-        if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
-            throw new ExecaoMensagem("Numero de conta ja existe");
         if (!contaRequest.getTipoConta().equalsIgnoreCase("PF") == contaRequest.getTipoConta()
                 .equalsIgnoreCase("PJ") == contaRequest.getTipoConta().equalsIgnoreCase("GOV")) {
             throw new ExecaoMensagem("Deve ser 'PF' ou 'PJ' ou 'GOV' para cadastrar");
@@ -138,12 +134,15 @@ public class ContaService {
         return contaResponse;
     }
 
-    public void deletar(Long id) {
-        contaRepository.delete(encontreIdOuErro(id));
+    public void deletar(int numeroConta) {
+        contaRepository.delete(encontreIdOuErro(numeroConta));
     }
 
-    public Conta encontreIdOuErro(Long id) {
-        return contaRepository.findById(id)
-                .orElseThrow(() -> new ExecaoMensagem("ID não existe"));
+    public Conta encontreIdOuErro(int numeroConta) {
+        Conta conta = contaRepository.findByNumeroConta(numeroConta);
+        if (conta == null) {
+            throw new ExecaoMensagem("Numero Conta informada não existe na base");
+        }
+        return conta;
     }
 }
