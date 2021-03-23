@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class ContaRequestPut {
-    private Long id;
     @Range(min = 1000, max = 10000, message = "Agencia deve ser 4 digitos")
     private int agencia;
     @NotNull(message = "Numero da conta não pode ser nulo")

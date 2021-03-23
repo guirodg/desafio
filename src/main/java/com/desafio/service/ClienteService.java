@@ -25,7 +25,7 @@ public class ClienteService {
             throw new ExecaoMensagem("CPF Informado não existe");
 
         ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
-        clienteResponse.setStatus("Cliente obtido com sucesso!");
+        clienteResponse.setMensagem("Cliente obtido com sucesso!");
         return clienteResponse;
     }
 
@@ -36,8 +36,9 @@ public class ClienteService {
         for (Cliente cliente : clientes) {
             ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
             clienteResponses.add(clienteResponse);
-            if (Objects.isNull(clienteResponses.get(0).getStatus()))
-                clienteResponse.setStatus(clientes.size() + " clientes cadastrados");
+
+            if (Objects.isNull(clienteResponses.get(0).getMensagem()))
+                clienteResponse.setMensagem(clientes.size() + " Clientes cadastrados");
         }
         return clienteResponses;
     }
@@ -60,7 +61,6 @@ public class ClienteService {
         Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
         ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
-        clienteResponse.setStatus("Cliente cadastrado com sucesso!");
         return clienteResponse;
     }
 
@@ -81,7 +81,7 @@ public class ClienteService {
         Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
         ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
-        clienteResponse.setStatus("Cliente atualizado com sucesso!");
+        clienteResponse.setMensagem("Cliente atualizado com sucesso!");
         return clienteResponse;
     }
 

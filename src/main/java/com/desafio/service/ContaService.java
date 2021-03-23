@@ -11,7 +11,6 @@ import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
 import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
-import com.desafio.util.Validador;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -53,8 +51,8 @@ public class ContaService {
         for (Conta conta : contas) {
             ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
             contaResponses.add(contaResponse);
-            if (Objects.isNull(contaResponses.get(0).getStatus())) {
-                contaResponse.setStatus(contas.size() + " contas cadastradas");
+            if (Objects.isNull(contaResponses.get(0).getMensagem())) {
+                contaResponse.setMensagem(contas.size() + " contas cadastradas");
             }
         }
         return contaResponses;
@@ -100,6 +98,7 @@ public class ContaService {
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
         contaResponse.setCpfCliente(contaRequest.getCpfCliente());
         contaResponse.setAgencia(conta.getAgencia());
+        contaResponse.setMensagem("Limite de saque "+ limeteSaque);
         return contaResponse;
     }
 
@@ -117,7 +116,7 @@ public class ContaService {
         contaRepository.save(conta);
 
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
-        contaResponse.setStatus("Conta atualizada!");
+        contaResponse.setMensagem("Conta atualizada!");
         return contaResponse;
     }
 

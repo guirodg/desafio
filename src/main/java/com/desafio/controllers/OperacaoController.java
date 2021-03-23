@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,22 +19,22 @@ public class OperacaoController {
     private final OperacaoService operacaoService;
 
     @GetMapping
-    public ResponseEntity<List<OperacaoResponse>> listarTodosExtratosPorId(@RequestParam String cpfCliente, @RequestParam int numeroConta, @RequestParam int agencia) {
+    public ResponseEntity<List<OperacaoResponse>> listarTodosExtratosPorId(@Valid @RequestParam String cpfCliente, @RequestParam int numeroConta, @RequestParam int agencia) {
         return ResponseEntity.ok(operacaoService.listarExtrato(cpfCliente, numeroConta, agencia));
     }
 
     @PostMapping(path = "/deposito")
-    public ResponseEntity<OperacaoResponseDepositoSaque> salvarSaldo(@RequestBody OperacaoRequest operacaoRequest) {
+    public ResponseEntity<OperacaoResponseDepositoSaque> salvarSaldo(@Valid @RequestBody OperacaoRequest operacaoRequest) {
         return new ResponseEntity<>(operacaoService.salvarDeposito(operacaoRequest), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/saque")
-    public ResponseEntity<OperacaoResponseDepositoSaque> salvarSaque(@RequestBody OperacaoRequest operacaoRequest) {
+    public ResponseEntity<OperacaoResponseDepositoSaque> salvarSaque(@Valid @RequestBody OperacaoRequest operacaoRequest) {
         return new ResponseEntity<>(operacaoService.salvarSaque(operacaoRequest), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/transferencia")
-    public ResponseEntity<OperacaoResponse> salvarTransferencia(@RequestBody OperacaoRequest operacaoRequest) {
+    public ResponseEntity<OperacaoResponse> salvarTransferencia(@Valid @RequestBody OperacaoRequest operacaoRequest) {
         return new ResponseEntity<>(operacaoService.salvarTransferencia(operacaoRequest), HttpStatus.CREATED);
     }
 }

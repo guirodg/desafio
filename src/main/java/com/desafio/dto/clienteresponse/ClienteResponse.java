@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClienteResponse {
-    private String status;
+    private String mensagem;
     private String nome;
     private String cpfCnpj;
     private String telefone;

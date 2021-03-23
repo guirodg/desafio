@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -42,10 +43,11 @@ public class OperacaoService {
 
         List<OperacaoResponse> operacaoResponses = new ArrayList<>();
         for (Operacao operacao : operacaoNumero) {
-            Operacao operacaoSalva = operacaoRepository.save(operacao);
-            OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacaoSalva);
-            operacaoResponse.setStatus("Extrato realizado!");
+            OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
             operacaoResponses.add(operacaoResponse);
+
+            if(Objects.isNull(operacaoResponses.get(0).getMensagem()))
+                operacaoResponse.setMensagem(operacaoNumero.size() + " Operaçoes realizadas");
         }
         return operacaoResponses;
     }
@@ -74,7 +76,6 @@ public class OperacaoService {
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
         operacaoRepository.save(operacao);
         OperacaoResponseDepositoSaque operacaoResponseDepositoSaque = OperacaoMapper.INSTANCE.toDtoDepositoSaque(operacao);
-        operacaoResponseDepositoSaque.setStatus("Deposito realizado!");
         return operacaoResponseDepositoSaque;
     }
 
@@ -111,7 +112,6 @@ public class OperacaoService {
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
         operacaoRepository.save(operacao);
         OperacaoResponseDepositoSaque operacaoResponseDepositoSaque = OperacaoMapper.INSTANCE.toDtoDepositoSaque(operacao);
-        operacaoResponseDepositoSaque.setStatus("Saque realizado!");
         return operacaoResponseDepositoSaque;
     }
 
@@ -151,7 +151,6 @@ public class OperacaoService {
 
         Operacao operacao = OperacaoMapper.INSTANCE.toModel(operacaoRequest);
         OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
-        operacaoResponse.setStatus("Transferencia realizada!");
         operacaoRepository.save(operacao);
         return operacaoResponse;
     }
