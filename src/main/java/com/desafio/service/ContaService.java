@@ -106,18 +106,18 @@ public class ContaService {
         encontreIdOuErro(contaRequest.getId());
         if (contaRequest.getId() <= 0)
             throw new ExecaoMensagem("Preencha id da conta");
+        if (clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) == null)
+            throw new ExecaoMensagem("CPF Informado não existe");
         if (contaRequest.getTipoConta().isEmpty())
             throw new ExecaoMensagem("Preencha o campo tipo conta");
         if (contaRepository.findByNumeroConta(contaRequest.getNumeroConta()) != null)
             throw new ExecaoMensagem("Numero de conta ja existe");
-        if (!contaRequest.getTipoConta().equals("pessoa fisica") == contaRequest.getTipoConta().equals("pessoa juridica") == contaRequest.getTipoConta().equals("governamental")) {
-            throw new ExecaoMensagem("Deve ser 'pessoa fisica' ou 'pessoa juridica' ou 'governamental' para cadastrar");
+        if (!contaRequest.getTipoConta().equalsIgnoreCase("PF") == contaRequest.getTipoConta()
+                .equalsIgnoreCase("PJ") == contaRequest.getTipoConta().equalsIgnoreCase("GOV")) {
+            throw new ExecaoMensagem("Deve ser 'PF' ou 'PJ' ou 'GOV' para cadastrar");
         }
-        Validador.validaCpf(contaRequest.getCpfCliente());
 
         Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
-        conta.setId(contaRequest.getId());
-        conta.setAgencia(new Random().nextInt(10));
         contaRepository.save(conta);
 
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);

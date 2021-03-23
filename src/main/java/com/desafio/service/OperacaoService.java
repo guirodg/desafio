@@ -57,7 +57,7 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite Numero da conta origem para operação");
         if (operacaoRequest.getValor() <= 0)
             throw new ExecaoMensagem("Digite 'valor' para realizar deposito");
-        if (!operacaoRequest.getTipoOperacao().equals("deposito"))
+        if (!operacaoRequest.getTipoOperacao().equalsIgnoreCase("deposito"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'deposito'");
 
         Conta conta = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem());
@@ -83,7 +83,7 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite o valor do saque");
         if (operacaoRequest.getNumeroContaOrigem() <= 0)
             throw new ExecaoMensagem("Digite Numero da conta que deseja relizar operação");
-        if (!operacaoRequest.getTipoOperacao().equals("saque"))
+        if (!operacaoRequest.getTipoOperacao().equalsIgnoreCase("saque"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'saque'");
 
         Conta conta = contaRepository.findByNumeroConta(operacaoRequest.getNumeroContaOrigem());
@@ -120,7 +120,7 @@ public class OperacaoService {
             throw new ExecaoMensagem("Digite o valor para a transferencia");
         if (operacaoRequest.getNumeroContaOrigem() <= 0)
             throw new ExecaoMensagem("Digite Numero da conta que deseja relizar operação");
-        if (!operacaoRequest.getTipoOperacao().equals("transferencia"))
+        if (!operacaoRequest.getTipoOperacao().equalsIgnoreCase("transferencia"))
             throw new ExecaoMensagem("Digite tipo de operacao: 'transferencia'");
         if (operacaoRequest.getNumeroContaOrigem() == operacaoRequest.getNumeroContaDestino())
             throw new ExecaoMensagem("Não pode realizar transferencia para mesma conta");

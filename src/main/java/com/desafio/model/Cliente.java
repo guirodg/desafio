@@ -14,9 +14,6 @@ import javax.persistence.*;
 @Builder
 public class Cliente {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
     private String cpfCnpj;
     private String nome;
     private String telefone;

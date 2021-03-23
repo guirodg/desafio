@@ -15,7 +15,7 @@ public class ErroController {
                 ExecaoAtributos.builder()
                         .timestamp(LocalDateTime.now())
                         .status(422)
-                        .titulo("Bad Request")
+                        .titulo("Unprocessable Entity")
                         .message(e.getMessage())
                         .build(), HttpStatus.UNPROCESSABLE_ENTITY);
     }

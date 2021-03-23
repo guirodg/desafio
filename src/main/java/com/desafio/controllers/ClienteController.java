@@ -37,9 +37,9 @@ public class ClienteController {
         return new ResponseEntity<>(clienteService.atualizar(clienteRequest), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity deletar(@PathVariable Long id) {
-        clienteService.deletar(id);
+    @DeleteMapping
+    public ResponseEntity deletar(@RequestParam String cpf) {
+        clienteService.deletar(cpf);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

@@ -23,7 +23,7 @@ public class ExceptionController {
                 ValidationException.builder()
                         .timestamp(LocalDateTime.now())
                         .status(422)
-                        .titulo("Bad Request")
+                        .titulo("Unprocessable Entity")
                         .message(fieldsMessage)
                         .campo(fields)
                         .build(), HttpStatus.UNPROCESSABLE_ENTITY);

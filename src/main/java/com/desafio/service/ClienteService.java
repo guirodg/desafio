@@ -63,9 +63,6 @@ public class ClienteService {
     }
 
     public ClienteResponse atualizar(ClienteRequest clienteRequest) {
-        if (clienteRequest.getId() == null)
-            throw new ExecaoMensagem("ID não pode ser nulo");
-        clienteRequest.setId(encontreIdOuErro(clienteRequest.getId()).getId());
         if (clienteRequest.getNome().isEmpty() || clienteRequest.getNome().equals(null))
             throw new ExecaoMensagem("Preencha o campo nome!");
         if (clienteRequest.getEndereco().isEmpty())
@@ -74,9 +71,9 @@ public class ClienteService {
             throw new ExecaoMensagem("Preencha o campo telefone!");
         if (clienteRequest.getCpfCnpj().isEmpty())
             throw new ExecaoMensagem("Preencha o campo cpf!");
-        if (clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj()) != null)
-            throw new ExecaoMensagem("CPF já existe");
-
+        Cliente clienteCpf = clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj());
+        if (clienteCpf == null)
+            throw new ExecaoMensagem("CPF Informado não existe na base");
         Validador.validaCpf(clienteRequest.getCpfCnpj());
 
         Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
@@ -86,12 +83,15 @@ public class ClienteService {
         return clienteResponse;
     }
 
-    public void deletar(Long id) {
-        clienteRepository.delete(encontreIdOuErro(id));
+    public void deletar(String cpf) {
+        clienteRepository.delete(encontreIdOuErro(cpf));
     }
 
-    public Cliente encontreIdOuErro(Long id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new ExecaoMensagem("ID não existe"));
+    public Cliente encontreIdOuErro(String cpf) {
+        Cliente cliente = clienteRepository.findByCpfCnpj(cpf);
+        if (cliente == null) {
+            throw new ExecaoMensagem("CPF Informado não existe na base");
+        }
+        return cliente;
     }
 }
