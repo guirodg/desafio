@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,13 +30,14 @@ public class ClienteService {
     }
 
     public List<ClienteResponse> listaCliente() {
-        List<ClienteResponse> clienteResponses = new ArrayList<>();
         List<Cliente> clientes = clienteRepository.findAll();
+        List<ClienteResponse> clienteResponses = new ArrayList<>();
+
         for (Cliente cliente : clientes) {
-            Cliente clienteSalvo = clienteRepository.save(cliente);
-            ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(clienteSalvo);
-            clienteResponse.setStatus("Sucesso!");
+            ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
             clienteResponses.add(clienteResponse);
+            if (Objects.isNull(clienteResponses.get(0).getStatus()))
+                clienteResponse.setStatus(clientes.size() + " clientes cadastrados");
         }
         return clienteResponses;
     }
