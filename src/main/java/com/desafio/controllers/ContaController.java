@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("contas")
 @RequiredArgsConstructor
 public class ContaController {
+
     private final ContaService contaService;
 
     @GetMapping(value = "busca")

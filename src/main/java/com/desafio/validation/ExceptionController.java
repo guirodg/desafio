@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ExceptionController {
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationException> handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
@@ -29,14 +30,4 @@ public class ExceptionController {
                         .build(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<ValidationRunTime> handlerRuntimeException(RuntimeException e) {
-//        return new ResponseEntity<>(
-//                ValidationRunTime.builder()
-//                        .timestamp(LocalDateTime.now())
-//                        .status(403)
-//                        .titulo("Bad Request")
-//                        .message("requisição invalida")
-//                        .build(), HttpStatus.FORBIDDEN);
-//    }
 }

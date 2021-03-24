@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("operacoes")
 @RequiredArgsConstructor
 public class OperacaoController {
+
     private final OperacaoService operacaoService;
 
     @GetMapping

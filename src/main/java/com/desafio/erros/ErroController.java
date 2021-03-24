@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class ErroController {
+
     @ExceptionHandler(ExecaoMensagem.class)
     public ResponseEntity<ExecaoAtributos> requestExecao(ExecaoMensagem e) {
         return new ResponseEntity<>(

@@ -26,6 +26,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class ContaService {
+
     private final ContaRepository contaRepository;
     private final ClienteRepository clienteRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;

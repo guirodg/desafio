@@ -10,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public abstract class ContaMapper {
+
     public static final ContaMapper INSTANCE = Mappers.getMapper(ContaMapper.class);
 
     public abstract Conta toModel(ContaRequest contaRequest);

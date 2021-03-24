@@ -25,6 +25,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class OperacaoService {
+
     private final OperacaoRepository operacaoRepository;
     private final ContaRepository contaRepository;
     private final ClienteRepository clienteRepository;

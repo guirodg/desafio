@@ -9,6 +9,7 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public abstract class OperacaoMapper {
+
     public static final OperacaoMapper INSTANCE = Mappers.getMapper(OperacaoMapper.class);
 
     public abstract Operacao toModel(OperacaoRequest operacaoRequest);
