@@ -27,7 +27,9 @@ import java.util.Objects;
 public class OperacaoService {
 
     private final OperacaoRepository operacaoRepository;
+
     private final ContaRepository contaRepository;
+
     private final ClienteRepository clienteRepository;
 
     public List<OperacaoResponse> listarExtrato(String cpfCliente, int numeroConta, int agencia) {
@@ -47,7 +49,7 @@ public class OperacaoService {
             OperacaoResponse operacaoResponse = OperacaoMapper.INSTANCE.toDto(operacao);
             operacaoResponses.add(operacaoResponse);
 
-            if(Objects.isNull(operacaoResponses.get(0).getMensagem()))
+            if (Objects.isNull(operacaoResponses.get(0).getMensagem()))
                 operacaoResponse.setMensagem(operacaoNumero.size() + " Operaçoes realizadas");
         }
         return operacaoResponses;
@@ -106,6 +108,7 @@ public class OperacaoService {
 
         ControleContaExterno controleContaExterno = ControleContaExterno.builder()
                 .numeroConta(operacaoRequest.getNumeroContaOrigem())
+                .cpfCliente(conta.getCpfCliente())
                 .agencia(operacaoRequest.getAgenciaOrigem())
                 .build();
         new RestTemplate().put("http://localhost:8081/controle", controleContaExterno);

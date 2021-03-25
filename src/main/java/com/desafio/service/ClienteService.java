@@ -23,10 +23,9 @@ public class ClienteService {
     public ClienteResponse buscaCpfCliente(String cpfCliente) {
         Cliente cliente = clienteRepository.findByCpfCnpj(cpfCliente);
         if (cliente == null)
-            throw new ExecaoMensagem("CPF Informado não existe");
+            throw new ExecaoMensagem("CPF ou CNPJ Informado não existe");
 
         ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
-        clienteResponse.setMensagem("Cliente obtido com sucesso!");
         return clienteResponse;
     }
 
@@ -52,10 +51,10 @@ public class ClienteService {
         if (clienteRequest.getTelefone().isEmpty())
             throw new ExecaoMensagem("Preencha o campo telefone!");
         if (clienteRequest.getCpfCnpj().isEmpty())
-            throw new ExecaoMensagem("Preencha o campo cpf!");
+            throw new ExecaoMensagem("Preencha o campo cpf cnpj!");
 
         if (clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj()) != null)
-            throw new ExecaoMensagem("CPF já existe");
+            throw new ExecaoMensagem("CPF ou CNPJ já existe");
 
         Validador.validaCpf(clienteRequest.getCpfCnpj());
 
@@ -73,7 +72,7 @@ public class ClienteService {
         if (clienteRequest.getTelefone().isEmpty())
             throw new ExecaoMensagem("Preencha o campo telefone!");
         if (clienteRequest.getCpfCnpj().isEmpty())
-            throw new ExecaoMensagem("Preencha o campo cpf!");
+            throw new ExecaoMensagem("Preencha o campo cpf cnpj!");
         Cliente clienteCpf = clienteRepository.findByCpfCnpj(clienteRequest.getCpfCnpj());
         if (clienteCpf == null)
             throw new ExecaoMensagem("CPF Informado não existe na base");
@@ -82,7 +81,6 @@ public class ClienteService {
         Cliente cliente = ClienteMapper.INSTANCE.toModel(clienteRequest);
         clienteRepository.save(cliente);
         ClienteResponse clienteResponse = ClienteMapper.INSTANCE.toDTO(cliente);
-        clienteResponse.setMensagem("Cliente atualizado com sucesso!");
         return clienteResponse;
     }
 
@@ -93,7 +91,7 @@ public class ClienteService {
     public Cliente encontreIdOuErro(String cpf) {
         Cliente cliente = clienteRepository.findByCpfCnpj(cpf);
         if (cliente == null) {
-            throw new ExecaoMensagem("CPF Informado não existe na base");
+            throw new ExecaoMensagem("CPF ou CNPJ Informado não existe na base");
         }
         return cliente;
     }

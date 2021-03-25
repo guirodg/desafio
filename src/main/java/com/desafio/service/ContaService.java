@@ -109,11 +109,28 @@ public class ContaService {
             throw new ExecaoMensagem("Deve ser 'PF' ou 'PJ' ou 'GOV' para cadastrar");
         }
 
+        int limeteSaque = 0;
+        if (contaRequest.getTipoConta().equalsIgnoreCase("PF"))
+            limeteSaque = 5;
+        if (contaRequest.getTipoConta().equalsIgnoreCase("PJ"))
+            limeteSaque = 50;
+        if (contaRequest.getTipoConta().equalsIgnoreCase("GOV"))
+            limeteSaque = 250;
+
         Conta conta = ContaMapper.INSTANCE.toModel(contaRequest);
         contaRepository.save(conta);
 
+        ControleContaExterno controleContaExterno = ControleContaExterno.builder()
+                .agencia(contaRequest.getAgencia())
+                .numeroConta(contaRequest.getNumeroConta())
+                .tipoConta(contaRequest.getTipoConta())
+                .limeteSaque(limeteSaque)
+                .cpfCliente(contaRequest.getCpfCliente()).build();
+
+        kafkaTemplate.send("TOPIC_BANCO", controleContaExterno);
+
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
-        contaResponse.setMensagem("Conta atualizada!");
+        contaResponse.setMensagem("Limite de saque " + limeteSaque);
         return contaResponse;
     }
 

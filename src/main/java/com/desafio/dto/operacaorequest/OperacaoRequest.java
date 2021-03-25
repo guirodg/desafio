@@ -9,17 +9,24 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class OperacaoRequest {
-    @NotNull(message = "Não pode ser nulo ou vazio")
+
+    @NotNull(message = "Valor não pode ser nulo ou vazio")
     private double valor;
-    @NotBlank(message = "Não pode ser nulo ou vazio")
+
+    @NotBlank(message = "Tipo Operacao não pode ser nulo ou vazio")
     private String tipoOperacao;
-    @NotNull(message = "Não pode ser nulo ou vazio")
+
+    @NotNull(message = "Conta Origem não pode ser nulo ou vazio")
     private int numeroContaOrigem;
-    @NotNull(message = "Não pode ser nulo ou vazio")
+
+    @NotNull(message = "Agencia Origem não pode ser nulo ou vazio")
     private int agenciaOrigem;
-    @NotNull(message = "Não pode ser nulo ou vazio")
+
+    @NotNull(message = "Conta Destino não pode ser nulo ou vazio")
     private int numeroContaDestino;
-    @NotNull(message = "Não pode ser nulo ou vazio")
+
+    @NotNull(message = "Agencia Destino não pode ser nulo ou vazio")
     private int agenciaDestino;
+    
     private String data;
 }
