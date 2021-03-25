@@ -11,8 +11,6 @@ import com.desafio.model.Cliente;
 import com.desafio.model.Conta;
 import com.desafio.repository.ClienteRepository;
 import com.desafio.repository.ContaRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -29,7 +27,7 @@ public class ContaService {
 
     private final ContaRepository contaRepository;
     private final ClienteRepository clienteRepository;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, ControleContaExterno> kafkaTemplate;
 
     public ContaResponse listarPorParam(String cpfCliente, int numeroConta, int agencia) {
         Cliente cliente = clienteRepository.findByCpfCnpj(cpfCliente);
@@ -59,7 +57,7 @@ public class ContaService {
         return contaResponses;
     }
 
-    public ContaResponse salvar(ContaRequest contaRequest) throws JsonProcessingException {
+    public ContaResponse salvar(ContaRequest contaRequest) {
         if (contaRequest.getTipoConta().isEmpty())
             throw new ExecaoMensagem("Preencha o campo tipo conta");
         if (clienteRepository.findByCpfCnpj(contaRequest.getCpfCliente()) == null)
@@ -92,14 +90,12 @@ public class ContaService {
                 .tipoConta(conta.getTipoConta())
                 .build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonControleConta = objectMapper.writeValueAsString(controleContaExterno);
-        kafkaTemplate.send("TOPIC_BANCO", jsonControleConta);
+        kafkaTemplate.send("TOPIC_BANCO", controleContaExterno);
 
         ContaResponse contaResponse = ContaMapper.INSTANCE.toDTO(conta);
         contaResponse.setCpfCliente(contaRequest.getCpfCliente());
         contaResponse.setAgencia(conta.getAgencia());
-        contaResponse.setMensagem("Limite de saque "+ limeteSaque);
+        contaResponse.setMensagem("Limite de saque " + limeteSaque);
         return contaResponse;
     }
 
