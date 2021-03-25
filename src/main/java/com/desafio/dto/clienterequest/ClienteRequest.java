@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 public class ClienteRequest {
 
     @NotBlank(message = "Não pode ser nulo ou vazio")
-    @Size(max = 15, message = "Limite maximo de caracter 15")
+    @Size(max = 55, message = "Limite maximo de caracter 55")
     private String nome;
 
     @NotBlank(message = "CPF/CNPJ não pode ser nulo!")
@@ -24,6 +24,6 @@ public class ClienteRequest {
     private String telefone;
 
     @NotBlank(message = "Endereço não pode ser nulo!")
-    @Size(max = 20, message = "Limite maximo de caracter 15")
+    @Size(max = 55, message = "Limite maximo de caracter 55")
     private String endereco;
 }
